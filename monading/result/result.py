@@ -23,6 +23,11 @@ class Ok(typing.Generic[Value], Wrapped[Value]):
 
     def __bool__(self) -> typing.Literal[True]:
         return True
+    
+    def __eq__(self, other: "Ok[Value]") -> bool:
+        if not isinstance(other, Ok):
+            return False
+        return self.value == other.value
 
     def unwrap(self) -> Value:
         return self.value
@@ -61,6 +66,11 @@ class Error(typing.Generic[Err], Wrapped[typing.NoReturn]):
     def __post_init__(self) -> None:
         tb = RESULT_ERROR_LOGGER.format_traceback(self.error)
         self.tb = "Result log\n" + tb
+
+    def __eq__(self, other: "Error[Err]") -> bool:
+        if not isinstance(other, Error):
+            return False
+        return self.error == other.error
 
     def __repr__(self) -> str:
         return (
