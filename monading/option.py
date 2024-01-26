@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-from monading.protocols import Wrapped
+from monading.protocols import Wrapped, UnwrapError
 
 T = typing.TypeVar("T")
 Value = typing.TypeVar("Value", covariant=True)
@@ -59,7 +59,7 @@ class NothingType(Wrapped[typing.NoReturn]):
         return isinstance(__value, self.__class__)
 
     def unwrap(self) -> typing.NoReturn:
-        raise ValueError("Nothing to unwrap.")
+        raise UnwrapError("Nothing to unwrap.")
 
     def unwrap_or(self, alternate_value: T, /) -> T:
         return alternate_value
