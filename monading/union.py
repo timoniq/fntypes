@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from monading.protocols import Wrapped
+from monading.protocols import Wrapped, UnwrapError
 from monading.tools import RuntimeGeneric
 
 Ts = typing.TypeVarTuple("Ts")  # does not support bounds :(
@@ -59,8 +59,8 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Un
         u: Union[str, int] = Union("Hello")
         u.seclude() # "Hello"
         u.seclude(str) # "Hello"
-        u.seclude(int) # TypeError
-        u.seclude(list) # TypeError + (TODO: Unreachable code typehint)
+        u.seclude(int) # UnwrapError
+        u.seclude(list) # UnwrapError + (TODO: Unreachable code typehint)
         ```
         """
         if t == HEAD:
@@ -68,7 +68,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Un
         if not isinstance(self.value, t):
             if not raise_error:
                 return None
-            raise TypeError(f"{repr(self)} cannot be secluded to type {t}")
+            raise UnwrapError(f"{repr(self)} cannot be secluded to type {t}")
         return self.value  # type: ignore
     
     @typing.overload
@@ -106,14 +106,14 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Un
         u.exclude() # Union[str](value="Hello")
 
         u = Union(1)
-        u.exclude() # TypeError
+        u.exclude() # UnwrapError
         ```
         """
         head, *tail = self.get_args()
         if isinstance(self.value, head) and not isinstance(self.value, tuple(tail)):
             if not raise_error:
                 return None
-            raise TypeError(f"{repr(self)} is of type {head}. thus, head cannot be excluded")
+            raise UnwrapError(f"{repr(self)} is of type {head}. thus, head cannot be excluded")
         if len(self.get_args()) - 1 == 1:
             return self.value
         return Union[*self.get_args()[1:]](self.value)  # type: ignore

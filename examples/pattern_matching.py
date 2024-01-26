@@ -28,7 +28,7 @@ def process_event(event: Event) -> None:
 
     match event.unwrap():
         case Message(from_user, Some(text)):
-            send_message(from_user, Some("Hi. Thank you for you message " + repr(text)))
+            send_message(from_user, Some("Hi. Thank you for your message " + repr(text)))
         case Message(from_user, _):
             send_message(from_user, Some("Hey, why you sent me an empty message?"))
         case Call(from_user):
