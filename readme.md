@@ -1,0 +1,3 @@
+# monading
+
+See [examples](/examples/)
