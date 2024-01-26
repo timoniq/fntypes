@@ -1,3 +1,3 @@
-from .wrapped import Wrapped
+from .wrapped import Wrapped, UnwrapError
 
-__all__ = ("Wrapped",)
+__all__ = ("Wrapped", "UnwrapError")

@@ -4,7 +4,7 @@ import dataclasses
 import typing
 
 from monading.result.log_factory import RESULT_ERROR_LOGGER
-from monading.protocols import Wrapped
+from monading.protocols import Wrapped, UnwrapError
 
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
@@ -87,9 +87,7 @@ class Error(typing.Generic[Err], Wrapped[typing.NoReturn]):
 
     def unwrap(self) -> typing.NoReturn:
         raise (
-            self.error
-            if isinstance(self.error, BaseException)
-            else Exception(self.error)
+            UnwrapError(self.error)
         )
 
     def unwrap_or(self, alternate_value: T, /) -> T:

@@ -13,7 +13,7 @@ def test_union_seclude_head():
     with pytest.raises(TypeError):
         b.seclude()
     
-    assert b.seclude(raise_error=False) == None
+    assert b.seclude(raise_error=False) is None
 
 
 def test_union_seclude_custom():
@@ -23,8 +23,8 @@ def test_union_seclude_custom():
     with pytest.raises(TypeError):
         a.seclude(int)
     
-    assert a.seclude(int, raise_error=False) == None
-    assert a.seclude(dict, raise_error=False) == None
+    assert a.seclude(int, raise_error=False) is None
+    assert a.seclude(dict, raise_error=False) is None
 
 
 def test_union_exclude():
@@ -32,7 +32,7 @@ def test_union_exclude():
     assert a.exclude(raise_error=False) == "String"
     
     b = Union[int, str](1)
-    assert b.exclude(raise_error=False) == None
+    assert b.exclude(raise_error=False) is None
     
     c = Union[int, str, list]("String")
     excluded = c.exclude()
@@ -62,4 +62,4 @@ def test_union_exclude_child():
     assert isinstance(b.exclude(), Union)
     assert b.exclude().get_args() == (A, B)
 
-    assert b.exclude().exclude(raise_error=False) == None
+    assert b.exclude().exclude(raise_error=False) is None
