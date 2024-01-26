@@ -27,6 +27,11 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Un
         """Just returns ambiguous value"""
         return self.value
     
+    @property
+    def juncture(self) -> typing.Union[typing.Unpack[Ts]]:
+        """More _sofisticated_ name for intersection of union types"""
+        return self.unwrap()
+    
     def get_args(self):
        return typing.get_args(self.__orig_class__)  # type: ignore
     

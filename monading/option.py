@@ -7,7 +7,6 @@ from monading.protocols import Wrapped, UnwrapError
 
 T = typing.TypeVar("T")
 Value = typing.TypeVar("Value", covariant=True)
-ErrorType: typing.TypeAlias = str | BaseException | type[BaseException]
 
 
 @dataclasses.dataclass(repr=False, frozen=True)
@@ -40,7 +39,7 @@ class Some(typing.Generic[Value], Wrapped[Value]):
     def map_or_else(self, default: object, f: typing.Callable[[Value], T], /) -> T:
         return f(self.value)
 
-    def expect(self, error: ErrorType, /) -> Value:
+    def expect(self, error: typing.Any, /) -> Value:
         return self.value
     
     def unwrap_or_none(self) -> Value:
@@ -76,8 +75,8 @@ class NothingType(Wrapped[typing.NoReturn]):
     def map_or_else(self, default: typing.Callable[[], T], f: object, /) -> T:
         return default()
 
-    def expect(self, error: ErrorType, /) -> typing.NoReturn:
-        raise error if not isinstance(error, str) else Exception(error)
+    def expect(self, error: typing.Any, /) -> typing.NoReturn:
+        raise UnwrapError(error)
     
     def unwrap_or_none(self) -> None:
         return None
