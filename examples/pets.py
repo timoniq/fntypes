@@ -49,7 +49,7 @@ match pet_lover.pet:
             print("- ...")
             print("- Oh.. I forgot they can't speak")
         
-        if cat := pet.seclude(Cat, raise_error=False):
+        if cat := pet.seclude(Cat).unwrap_or(None):
             print("- I love cats!! Does she have kittens?")
             if not cat.kittens:
                 print("- Not really")
