@@ -19,4 +19,4 @@ def calculate_over_something(x: Option[int], count: int) -> Option[int]:
 
 
 print(calculate_over_something(Some(10), 10).unwrap_or_none()) # *big number*
-print(calculate_over_something(Nothing, 10).unwrap_or_none()) # None
+print(calculate_over_something(Nothing(), 10).unwrap_or_none()) # None

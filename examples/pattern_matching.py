@@ -26,7 +26,7 @@ def send_message(to_user: int, text: Option[str]) -> Result[int, "str"]:
 
 def process_event(event: Event) -> None:
 
-    match event.unwrap():
+    match event.value:
         case Message(from_user, Some(text)):
             send_message(from_user, Some("Hi. Thank you for your message " + repr(text)))
         case Message(from_user, _):
@@ -36,5 +36,5 @@ def process_event(event: Event) -> None:
 
 
 process_event(Event(Message(1, Some("Hi, friend!!!"))))
-process_event(Event(Message(1, Nothing)))
+process_event(Event(Message(1, Nothing())))
 process_event(Event(Call(1)))

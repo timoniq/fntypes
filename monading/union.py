@@ -15,7 +15,7 @@ _ = typing.NewType("_", type)
 HEAD = typing.NewType("HEAD", type)
 
 
-class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Union[typing.Unpack[Ts]]]):
+class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
 
     def __init__(self, value: typing.Union[typing.Unpack[Ts]]):
        self.value = value
@@ -24,25 +24,21 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Un
         args = self.get_args()
         return "Union[{}]({})".format(", ".join([arg.__name__ for arg in args]), self.value)
     
-    def unwrap(self) -> typing.Union[typing.Unpack[Ts]]:
-        """Just returns ambiguous value"""
-        return self.value
-    
     @property
     def juncture(self) -> typing.Union[typing.Unpack[Ts]]:
         """More _sofisticated_ name for intersection of union types"""
-        return self.unwrap()
+        return self.value
     
     def get_args(self):
        return typing.get_args(self.__orig_class__)  # type: ignore
     
     @typing.overload
-    def seclude(self, t: type[T]) -> Ok[T]:
+    def seclude(self, t: type[T]) -> Result[T, str]:
         # Probably there is not way for a better typing until T cannot be bound to Ts or intersection typehint is implemented
         ...
 
     @typing.overload
-    def seclude(self: "Union[T, typing.Unpack[Ps]]", t = HEAD) -> Ok[T]:
+    def seclude(self: "Union[T, typing.Unpack[Ps]]", t = HEAD) -> Result[T, str]:
         ...
     
     @typing.overload
@@ -107,6 +103,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]], Wrapped[typing.Un
         if len(self.get_args()) - 1 == 1:
             return Ok(self.value)
         return Ok(Union[*self.get_args()[1:]](self.value))  # type: ignore
+    
 
 
 __all__ = (

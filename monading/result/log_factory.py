@@ -38,4 +38,26 @@ class ResultLoggingFactory:
         self._traceback_formatter = formatter
 
 
+class ErrorLogFactoryMixin:
+
+    def __post_init__(self) -> None:
+        tb = RESULT_ERROR_LOGGER.format_traceback(self.error)
+        self.tb = "Result log\n" + tb
+
+    def __getattribute__(self, __name: str) -> typing.Any:
+        """
+        If control over .error was passed to another logic 
+        (which is considered passed as soon as .error field is accessed) 
+        then there is no need to log on event of result deletion."""
+
+        if __name == "error" and self.tb is not None:
+            self.is_controlled = True
+        
+        return super().__getattribute__(__name)
+    
+    def __del__(self):
+        if self.tb and not self.is_controlled:
+            RESULT_ERROR_LOGGER(self.tb)
+
+
 RESULT_ERROR_LOGGER: typing.Final[ResultLoggingFactory] = ResultLoggingFactory()
