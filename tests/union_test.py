@@ -1,5 +1,5 @@
 import pytest
-from monading import Union
+from fntypes import Union
 
 
 def test_union_seclude_head():

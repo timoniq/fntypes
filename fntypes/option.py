@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from monading.result import Ok, Error
+from fntypes.result import Ok, Error
 
 Value = typing.TypeVar("Value", covariant=True)
 

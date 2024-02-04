@@ -1,10 +1,10 @@
-# monading
+# fntypes
 
 Functional typing in Python!
 
 See [examples](/examples/)
 
-Monading is based on the belief that raising exceptions **should be avoided**. Therefore, it offers a set of functional types needed to write better code. This type strategy grants your project with higher control over type system - improves control flow
+fntypes is based on the belief that raising exceptions **should be avoided**. Therefore, it offers a set of functional types needed to write better code. This type strategy grants your project with higher control over type system - improves control flow
 
 Contributions are welcome
 

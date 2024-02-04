@@ -1,4 +1,4 @@
-from monading import Union
+from fntypes import Union
 
 u = Union[int, str, float](1)
 

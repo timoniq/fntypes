@@ -1,4 +1,4 @@
-from monading.co import *
+from fntypes.co import *
 import random
 
 @unwrapping

@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "monading"
-version = "0.1.0"
+name = "fntypes"
+version = "0.1.0-dev1"
 description = ""
 authors = ["timoniq"]
 readme = "README.md"

@@ -1,7 +1,7 @@
-from monading.result import Result, Ok, Error
-from monading.option import Nothing
-from monading.protocols.wrapped import UnwrapError, Wrapped
-from monading.result.log_factory import RESULT_ERROR_LOGGER
+from fntypes.result import Result, Ok, Error
+from fntypes.option import Nothing
+from fntypes.protocols.wrapped import UnwrapError, Wrapped
+from fntypes.result.log_factory import RESULT_ERROR_LOGGER
 import pytest
 
 

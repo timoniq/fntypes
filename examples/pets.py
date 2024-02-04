@@ -1,4 +1,4 @@
-from monading import Union, Option, Some
+from fntypes import Union, Option, Some
 import dataclasses
 import typing
 

@@ -1,4 +1,4 @@
-from monading import unwrapping, Wrapped, Result, Error, Ok, Some
+from fntypes import unwrapping, Wrapped, Result, Error, Ok, Some
 
 @unwrapping
 def divide(a: Wrapped[float], b: Wrapped[float]) -> Result[float, str]:

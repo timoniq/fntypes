@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import typing
 
-from monading.protocols import Wrapped
-from monading.tools import RuntimeGeneric
-from monading.result import Result, Ok, Error
+from fntypes.tools import RuntimeGeneric
+from fntypes.result import Result, Ok, Error
 
 Ts = typing.TypeVarTuple("Ts")  # does not support bounds :(
 Ps = typing.TypeVarTuple("Ps")

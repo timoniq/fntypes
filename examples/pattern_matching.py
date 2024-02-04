@@ -1,4 +1,4 @@
-from monading import Option, Union, Some, unwrapping, Result, Ok, Nothing
+from fntypes import Option, Union, Some, unwrapping, Result, Ok, Nothing
 from dataclasses import dataclass
 import time
 

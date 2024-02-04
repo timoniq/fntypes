@@ -3,8 +3,8 @@ from __future__ import annotations
 import dataclasses
 import typing
 
-from monading.result.log_factory import ErrorLogFactoryMixin
-from monading.protocols import Wrapped, UnwrapError
+from fntypes.result.log_factory import ErrorLogFactoryMixin
+from fntypes.protocols import Wrapped, UnwrapError
 
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)

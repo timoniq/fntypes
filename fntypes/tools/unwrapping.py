@@ -1,8 +1,8 @@
 import typing
 
-from monading.result import Result, Error
-from monading.option import Option, Nothing
-from monading.protocols import UnwrapError
+from fntypes.result import Result, Error
+from fntypes.option import Option, Nothing
+from fntypes.protocols import UnwrapError
 
 ParamSpec = typing.ParamSpec("ParamSpec")
 T = typing.TypeVar("T")
