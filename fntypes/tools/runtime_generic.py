@@ -25,6 +25,9 @@ class Proxy:
 
   def __repr__(self):
     return f'<{self.__class__.__name__} of {self._generic!r}>'
+  
+  def get_args(self) -> tuple[type, ...]:
+    return typing.get_args(self._generic)
 
 class RuntimeGeneric:
   def __class_getitem__(cls, key):

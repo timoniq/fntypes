@@ -13,7 +13,6 @@ P = typing.TypeVar("P")
 _ = typing.NewType("_", type)
 HEAD = typing.NewType("HEAD", type)
 
-
 class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
 
     def __init__(self, value: typing.Union[typing.Unpack[Ts]]):
@@ -28,9 +27,18 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
         """Junction; intersection of union types"""
         return self.value
     
-    def get_args(self):
-       return typing.get_args(self.__orig_class__)  # type: ignore
+    @typing.overload
+    @classmethod
+    def get_args(cls) -> tuple[type, ...]:
+        """overload Proxy.get_args"""
+
+    @typing.overload
+    def get_args(self) -> tuple[type, ...]:
+        ...
     
+    def get_args(self):  # type: ignore
+       return typing.get_args(self.__orig_class__)  # type: ignore
+        
     @typing.overload
     def only(self, t: type[T]) -> Result[T, str]:
         # Probably there is not way for a better typing until T cannot be bound to Ts or intersection typehint is implemented
@@ -47,7 +55,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
 
     def only(
         self: "Union[T, typing.Unpack[Ps]]", 
-        t: type = HEAD,
+        t: type | typing.ForwardRef = HEAD,
     ) -> Result[typing.Union[T, typing.Unpack[Ps]], str]:
         """onlys union to single type. By default this type is generic leading type
         ```python
