@@ -1,5 +1,6 @@
 import typing
 import inspect
+import types
 
 # https://github.com/python/typing/issues/629#issuecomment-829629259
 
@@ -28,6 +29,14 @@ class Proxy:
   
   def get_args(self) -> tuple[type, ...]:
     return typing.get_args(self._generic)
+  
+  @property
+  def __class__(self):
+    return types.UnionType
+  
+  @property
+  def __args__(self):
+    return self.get_args()
 
 class RuntimeGeneric:
   def __class_getitem__(cls, key):
