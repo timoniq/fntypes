@@ -1,8 +1,8 @@
 import typing
 
 from fntypes.result import Result, Error
-from fntypes.option import Option, Nothing
-from fntypes.protocols import UnwrapError
+from fntypes.option import Option
+from fntypes.error import UnwrapError
 
 ParamSpec = typing.ParamSpec("ParamSpec")
 T = typing.TypeVar("T")

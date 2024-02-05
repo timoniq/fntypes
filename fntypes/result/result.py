@@ -4,7 +4,7 @@ import dataclasses
 import typing
 
 from fntypes.result.log_factory import ErrorLogFactoryMixin
-from fntypes.protocols import Wrapped, UnwrapError
+from fntypes.error import UnwrapError
 
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
@@ -13,7 +13,7 @@ ErrorType: typing.TypeAlias = str | BaseException | type[BaseException]
 
 
 @dataclasses.dataclass(frozen=True, repr=False)
-class Ok(typing.Generic[Value], Wrapped[Value]):
+class Ok(typing.Generic[Value]):
     """`Result.Ok` representing success and containing a value."""
 
     value: Value
@@ -24,7 +24,7 @@ class Ok(typing.Generic[Value], Wrapped[Value]):
     def __bool__(self) -> typing.Literal[True]:
         return True
     
-    def __eq__(self, other: "Ok[Value]") -> bool:
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Ok):
             return False
         return self.value == other.value
@@ -53,12 +53,12 @@ class Ok(typing.Generic[Value], Wrapped[Value]):
     def expect(self, error: ErrorType, /) -> Value:
         return self.value
     
-    def and_then(self: Result[Value, Err], f: typing.Callable[[Value], Result[T, Err]]) -> Result[T, Err]:
+    def and_then(self, f: typing.Callable[[Value], Result[T, Err]]) -> Result[T, Err]:
         return f(self.value)
 
 
 @dataclasses.dataclass(repr=False)
-class Error(typing.Generic[Err], Wrapped[typing.NoReturn], ErrorLogFactoryMixin):
+class Error(typing.Generic[Err], ErrorLogFactoryMixin):
     """`Result.Error` representing error and containing an error value."""
 
     error: Err
@@ -66,7 +66,7 @@ class Error(typing.Generic[Err], Wrapped[typing.NoReturn], ErrorLogFactoryMixin)
     tb: str | None = None
     is_controlled: bool = False
 
-    def __eq__(self, other: "Error[Err]") -> bool:
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Error):
             return False
         return self.error == other.error
@@ -110,10 +110,11 @@ class Error(typing.Generic[Err], Wrapped[typing.NoReturn], ErrorLogFactoryMixin)
     def expect(self, error: ErrorType, /) -> typing.NoReturn:
         raise error if not isinstance(error, str) else Exception(error)
     
-    def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> Error[Err]:
+    def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> typing.Self:
         return self
 
 
 Result: typing.TypeAlias = Ok[Value] | Error[Err]
+Wrapped: typing.TypeAlias = Ok[Value] | Error[typing.Any]
 
 __all__ = ("Ok", "Error", "Result")

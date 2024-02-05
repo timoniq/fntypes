@@ -1,6 +1,6 @@
 from fntypes.result import Result, Ok, Error
+from fntypes.error import UnwrapError
 from fntypes.option import Nothing
-from fntypes.protocols.wrapped import UnwrapError, Wrapped
 from fntypes.result.log_factory import RESULT_ERROR_LOGGER
 import pytest
 
@@ -10,10 +10,10 @@ def inc_number(n: int) -> Result[int, TypeError]:
 
 
 def test_result_ok():
+
     result = Ok(1)
     assert result.unwrap() == 1
     assert result
-    assert isinstance(result, Wrapped)
     assert result != Error("Oh")  # type: ignore
     assert result.unwrap_or(2) == 1
     assert result.unwrap_or_none() == 1

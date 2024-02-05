@@ -1,4 +1,4 @@
-from fntypes import unwrapping, Wrapped, Result, Error, Ok, Some
+from fntypes import unwrapping, Result, Error, Ok, Some, Wrapped
 
 @unwrapping
 def divide(a: Wrapped[float], b: Wrapped[float]) -> Result[float, str]:
