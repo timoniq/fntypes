@@ -3,7 +3,7 @@ name = "fntypes"
 version = "0.1.0-dev2"
 description = ""
 authors = ["timoniq"]
-readme = "README.md"
+readme = "readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
