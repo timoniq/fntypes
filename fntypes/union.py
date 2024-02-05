@@ -57,7 +57,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
         self: "Union[T, typing.Unpack[Ps]]", 
         t: type = HEAD,
     ) -> Result[typing.Union[T, typing.Unpack[Ps]], str]:
-        """onlys union to single type. By default this type is generic leading type
+        """sets union to single type. By default this type is generic leading type
         ```python
         u: Union[str, int] = Union("Hello")
         u.only() # Ok("Hello")
@@ -69,7 +69,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
         if t == HEAD:
             t = self.get_args()[0]
         if not isinstance(self.value, t):
-            return Error(f"{repr(self)} cannot be onlyd to type {t}")
+            return Error(f"{repr(self)} cannot be set only to type {t}")
         return Ok(self.value)  # type: ignore
     
     @typing.overload
@@ -93,7 +93,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
     def detach(  # type: ignore
         self,
     ):
-        """detachs head type. To make this customizable Python must implement intersection typing
+        """detaches head type. To make this customizable Python must implement intersection typing
         ```python
         u: Union[str, int]
 
@@ -106,7 +106,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
         """
         head, *tail = self.get_args()
         if isinstance(self.value, head) and not isinstance(self.value, tuple(tail)):
-            return Error(f"{repr(self)} is of type {head}. thus, head cannot be detachd")
+            return Error(f"{repr(self)} is of type {head}. thus, head cannot be detached")
         if len(self.get_args()) - 1 == 1:
             return Ok(self.value)
         return Ok(Union[*self.get_args()[1:]](self.value))  # type: ignore
