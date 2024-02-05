@@ -9,7 +9,8 @@ from fntypes.error import UnwrapError
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
 Value = typing.TypeVar("Value", covariant=True)
-ErrorType: typing.TypeAlias = str | BaseException | type[BaseException]
+
+R = typing.TypeVar("R", bound="Result")
 
 
 @dataclasses.dataclass(frozen=True, repr=False)
@@ -44,13 +45,13 @@ class Ok(typing.Generic[Value]):
     def map(self, op: typing.Callable[[Value], T], /) -> Ok[T]:
         return Ok(op(self.value))
 
-    def map_or(self, default: T, f: typing.Callable[[Value], T], /) -> T:
-        return f(self.value)
+    def map_or(self, default_value: T, f: typing.Callable[[Value], T], /) -> Ok[T]:
+        return Ok(f(self.value))
 
-    def map_or_else(self, default: object, f: typing.Callable[[Value], T], /) -> T:
-        return f(self.value)
+    def map_or_else(self, default_f: object, f: typing.Callable[[Value], T], /) -> Ok[T]:
+        return Ok(f(self.value))
 
-    def expect(self, error: ErrorType, /) -> Value:
+    def expect(self, error: typing.Any, /) -> Value:
         return self.value
     
     def and_then(self, f: typing.Callable[[Value], Result[T, Err]]) -> Result[T, Err]:
@@ -101,14 +102,14 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin):
     def map(self, op: object, /) -> typing.Self:
         return self
 
-    def map_or(self, default: T, f: object, /) -> T:
-        return default
+    def map_or(self, default_value: T, f: object, /) -> Ok[T]:
+        return Ok(default_value)
 
-    def map_or_else(self, default: typing.Callable[[Err], T], f: object, /) -> T:
-        return default(self.error)
+    def map_or_else(self, default_f: typing.Callable[[Err], T], f: object, /) -> Ok[T]:
+        return Ok(default_f(self.error))
 
-    def expect(self, error: ErrorType, /) -> typing.NoReturn:
-        raise error if not isinstance(error, str) else Exception(error)
+    def expect(self, error: typing.Any, /) -> typing.NoReturn:
+        raise UnwrapError(error)
     
     def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> Error[Err]:
         return self

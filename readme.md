@@ -4,6 +4,8 @@ Functional typing in Python!
 
 See [examples](/examples/)
 
+See [documentation](/docs/index.md)
+
 fntypes is based on the belief that raising exceptions **should be avoided**. Therefore, it offers a set of functional types needed to write better code. This type strategy grants your project with higher control over type system - improves control flow
 
 Contributions are welcome

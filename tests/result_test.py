@@ -20,8 +20,8 @@ def test_result_ok():
     assert result.unwrap_or_other(Error(None)) == 1
 
     assert result.map(lambda v: 22 / v) == Ok(22)
-    assert result.map_or(10, lambda v: v + v) == 2
-    assert result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == 1
+    assert result.map_or(10, lambda v: v + v) == Ok(2)
+    assert result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == Ok(1)
     assert result.and_then(inc_number).unwrap() == 2
     assert repr(result) == "<Result: Ok(1)>"
     assert result.expect("Should not happen") == 1
@@ -37,13 +37,15 @@ def test_result_err():
     assert result.unwrap_or_none() is None
     assert result.unwrap_or_other(Ok(10)) == 10
     assert result.map(lambda _: 2) == result
-    assert result.map_or(5, lambda _: 6) == 5
-    assert result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == 2
+    assert result.map_or(5, lambda _: 6) == Ok(5)
+    assert result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == Ok(2)
     assert result.and_then(inc_number).error.args[0] == "Oh"
     assert repr(result) == "<Result: Error(TypeError: 'Oh')>"
 
-    with pytest.raises(ValueError):
-        assert result.expect(ValueError)
+    with pytest.raises(UnwrapError) as exc_info:
+        assert result.expect(ValueError())
+    
+    assert isinstance(exc_info._excinfo[1].args[0], ValueError)  # type: ignore
 
 def test_nothing():
     nothing = Nothing()
