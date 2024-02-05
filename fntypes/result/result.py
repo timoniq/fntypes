@@ -110,7 +110,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin):
     def expect(self, error: ErrorType, /) -> typing.NoReturn:
         raise error if not isinstance(error, str) else Exception(error)
     
-    def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> typing.Self:
+    def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> Error[Err]:
         return self
 
 
