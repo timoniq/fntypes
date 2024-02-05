@@ -11,6 +11,8 @@ class Proxy:
   def __getattr__(self, name):
     if typing._is_dunder(name):
       return getattr(self._generic, name)
+    if name == "copy_with":
+      return getattr(self._generic, name)
     origin = self._generic.__origin__
     obj = getattr(origin, name)
     if inspect.ismethod(obj) and isinstance(obj.__self__, type):
@@ -32,7 +34,7 @@ class Proxy:
   
   @property
   def __class__(self):
-    return types.UnionType
+    return typing._GenericAlias  # type: ignore
   
   @property
   def __args__(self):
