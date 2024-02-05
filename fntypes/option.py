@@ -3,9 +3,11 @@ from __future__ import annotations
 import typing
 
 from fntypes.result import Ok, Error
+from fntypes.result.result import Result
 
 Value = typing.TypeVar("Value", covariant=True)
 T = typing.TypeVar("T")
+Err = typing.TypeVar("Err")
 
 
 class Nothing(Error[None]):
@@ -22,6 +24,9 @@ class Some(typing.Generic[Value], Ok[Value]):
     
     def map(self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self.value))
+    
+    def and_then(self, f: typing.Callable[[Value], Option[T]]) -> Option[T]:
+        return f(self.value)
 
 
 Option: typing.TypeAlias = Some[Value] | Nothing

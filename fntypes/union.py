@@ -55,7 +55,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
 
     def only(
         self: "Union[T, typing.Unpack[Ps]]", 
-        t: type | typing.ForwardRef = HEAD,
+        t: type = HEAD,
     ) -> Result[typing.Union[T, typing.Unpack[Ps]], str]:
         """onlys union to single type. By default this type is generic leading type
         ```python
