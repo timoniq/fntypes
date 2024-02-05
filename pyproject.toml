@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fntypes"
-version = "0.1.0-dev3"
+version = "0.1.0"
 description = ""
 authors = ["timoniq"]
 readme = "readme.md"
