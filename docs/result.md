@@ -63,6 +63,8 @@ lst = ["Eniki", "Beniki", "Eli", "Vareniki"]
 x.map(lambda n: lst[n]) # <Result: Ok("Vareniki")>
 y.map(lambda n: lst[n]) # <Result: Error("Divisor cannot be zero")>
 
+x.map(lambda n: lst[n]).map(str.upper) # <Result: Ok("VARENIKI")>
+
 # More map functions are going to be presented in 'docs/advanced'
 
 x.expect("Division failure") # Raises an exception: UnwrapError("Division failure")
