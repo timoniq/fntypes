@@ -1,6 +1,6 @@
 from .option import Option, Nothing, Some
-from .union import Union
+from .variative import Variative
 from .result import Result, Error, Ok, Wrapped
 from .tools import unwrapping
 
-__all__ = ("Option", "Nothing", "Some", "Union", "Result", "Error", "Ok", "Wrapped", "unwrapping")
+__all__ = ("Option", "Nothing", "Some", "Variative", "Result", "Error", "Ok", "Wrapped", "unwrapping")

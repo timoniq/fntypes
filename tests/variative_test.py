@@ -1,12 +1,12 @@
 import pytest
-from fntypes import Union
+from fntypes import Variative
 
 
 def test_union_only_head():
-    a = Union[int, str](5)
+    a = Variative[int, str](5)
     assert a.only().unwrap() == 5
 
-    b = Union[int, str]("String")
+    b = Variative[int, str]("String")
     with pytest.raises(TypeError):
         b.only().unwrap()
     
@@ -14,7 +14,7 @@ def test_union_only_head():
 
 
 def test_union_only_custom():
-    a = Union[int, str, list[str]]("String")
+    a = Variative[int, str, list[str]]("String")
     assert a.only(str).unwrap() == "String"
 
     with pytest.raises(TypeError):
@@ -25,15 +25,15 @@ def test_union_only_custom():
 
 
 def test_union_detach():
-    a = Union[int, str]("String")
+    a = Variative[int, str]("String")
     assert a.detach().unwrap() == "String"
     
-    b = Union[int, str](1)
+    b = Variative[int, str](1)
     assert b.detach().unwrap_or_none() is None
     
-    c = Union[int, str, list]("String")
+    c = Variative[int, str, list]("String")
     detachd = c.detach().unwrap()
-    assert isinstance(detachd, Union)
+    assert isinstance(detachd, Variative)
     assert detachd.get_args() == (str, list)
 
     with pytest.raises(TypeError):
@@ -51,12 +51,12 @@ class B(C):
 
 
 def test_union_detach_child():
-    a = Union[A, B, C](A())
-    assert isinstance(a.detach().unwrap(), Union)
+    a = Variative[A, B, C](A())
+    assert isinstance(a.detach().unwrap(), Variative)
     assert a.detach().unwrap().get_args() == (B, C)
 
-    b = Union[C, A, B](A())
-    assert isinstance(b.detach().unwrap(), Union)
+    b = Variative[C, A, B](A())
+    assert isinstance(b.detach().unwrap(), Variative)
     assert b.detach().unwrap().get_args() == (A, B)
 
     assert b.detach().unwrap().detach().unwrap_or_none() is None

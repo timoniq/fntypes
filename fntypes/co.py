@@ -3,8 +3,8 @@
 from .option import Option, Some, Nothing
 from .result import Result, Ok, Error, Wrapped
 from .error import UnwrapError
-from .union import Union
+from .variative import Variative
 from .tools.unwrapping import unwrapping
 
 
-__all__ = ("Option", "Some", "Nothing", "Result", "Ok", "Error", "Union", "unwrapping", "Wrapped", "UnwrapError")
+__all__ = ("Option", "Some", "Nothing", "Result", "Ok", "Error", "Variative", "unwrapping", "Wrapped", "UnwrapError")

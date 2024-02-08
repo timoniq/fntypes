@@ -1,3 +1,0 @@
-# fntypes - union
-
-wip

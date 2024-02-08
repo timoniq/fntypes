@@ -13,18 +13,18 @@ P = typing.TypeVar("P")
 _ = typing.NewType("_", type)
 HEAD = typing.NewType("HEAD", type)
 
-class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
+class Variative(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
 
     def __init__(self, value: typing.Union[typing.Unpack[Ts]]):
        self.value = value
 
     def __repr__(self) -> str:
         args = self.get_args()
-        return "Union[{}]({})".format(", ".join([arg.__name__ for arg in args]), self.value)
+        return "Variative[{}]({})".format(", ".join([arg.__name__ for arg in args]), self.value)
     
     @property
     def v(self) -> typing.Union[typing.Unpack[Ts]]:
-        """Junction; intersection of union types"""
+        """Junction; intersection of Variative types"""
         return self.value
     
     @typing.overload
@@ -45,7 +45,7 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
         ...
 
     @typing.overload
-    def only(self: "Union[T, typing.Unpack[Ps]]", t = HEAD) -> Result[T, str]:
+    def only(self: "Variative[T, typing.Unpack[Ps]]", t = HEAD) -> Result[T, str]:
         ...
     
     @typing.overload
@@ -54,12 +54,12 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
         ...
 
     def only(
-        self: "Union[T, typing.Unpack[Ps]]", 
+        self: "Variative[T, typing.Unpack[Ps]]", 
         t: type = HEAD,
     ) -> Result[typing.Union[T, typing.Unpack[Ps]], str]:
-        """sets union to single type. By default this type is generic leading type
+        """sets Variative to single type. By default this type is generic leading type
         ```python
-        u: Union[str, int] = Union("Hello")
+        u: Variative[str, int] = Variative("Hello")
         u.only() # Ok("Hello")
         u.only(str) # Ok("Hello")
         u.only(int) # Err
@@ -74,20 +74,20 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
     
     @typing.overload
     def detach(
-        self: "Union[P, T]",
+        self: "Variative[P, T]",
     ) -> Ok[T]:
         ...
     
     @typing.overload
     def detach(
-        self: "Union[T, typing.Unpack[Ps]]",
-    ) -> Ok["Union[typing.Unpack[Ps]]"]:
+        self: "Variative[T, typing.Unpack[Ps]]",
+    ) -> Ok["Variative[typing.Unpack[Ps]]"]:
         ...
 
     @typing.overload
     def detach(
-        self: "Union[T, typing.Unpack[Ps]]", 
-    ) -> Result["Union[typing.Unpack[Ps]]", str]:
+        self: "Variative[T, typing.Unpack[Ps]]", 
+    ) -> Result["Variative[typing.Unpack[Ps]]", str]:
         ...
     
     def detach(  # type: ignore
@@ -95,12 +95,12 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
     ):
         """detaches head type. To make this customizable Python must implement intersection typing
         ```python
-        u: Union[str, int]
+        u: Variative[str, int]
 
-        u = Union("Hello")
-        u.detach() # Ok(Union[str](value="Hello"))
+        u = Variative("Hello")
+        u.detach() # Ok(Variative[str](value="Hello"))
 
-        u = Union(1)
+        u = Variative(1)
         u.detach() # Err
         ```
         """
@@ -109,10 +109,10 @@ class Union(RuntimeGeneric, typing.Generic[typing.Unpack[Ts]]):
             return Error(f"{repr(self)} is of type {head}. thus, head cannot be detached")
         if len(self.get_args()) - 1 == 1:
             return Ok(self.value)
-        return Ok(Union[*self.get_args()[1:]](self.value))  # type: ignore
+        return Ok(Variative[*self.get_args()[1:]](self.value))  # type: ignore
     
 
 
 __all__ = (
-    "Union",
+    "Variative",
 )

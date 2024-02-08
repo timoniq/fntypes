@@ -8,6 +8,6 @@ Welcome! Here is the list of concepts implemented by fntypes in an order suggest
 
 3. [Unwrapping](/docs/unwrapping.md)
 
-4. [Union](/docs/union.md)
+4. [Variative](/docs/Variative.md)
 
 5. [Advanced practices](/docs/advanced.md)

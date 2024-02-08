@@ -1,4 +1,4 @@
-from fntypes import Option, Union, Some, unwrapping, Result, Ok, Nothing
+from fntypes import Option, Variative, Some, unwrapping, Result, Ok, Nothing
 from dataclasses import dataclass
 import time
 
@@ -16,7 +16,7 @@ class Call:
     from_user: int
 
 
-Event = Union[Message, Call]
+Event = Variative[Message, Call]
 
 @unwrapping
 def send_message(to_user: int, text: Option[str]) -> Result[int, "str"]:

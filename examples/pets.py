@@ -1,4 +1,4 @@
-from fntypes import Union, Option, Some
+from fntypes import Variative, Option, Some
 import dataclasses
 import typing
 
@@ -32,10 +32,10 @@ class Lizard:
 class PetLover:
     name: str
     age: int
-    pet: Option[Union[Cat, Dog, Lizard]]
+    pet: Option[Variative[Cat, Dog, Lizard]]
 
 
-pet_lover = PetLover("Nikolay", 20, Some(Union(Cat("Lusya", []))))
+pet_lover = PetLover("Nikolay", 20, Some(Variative(Cat("Lusya", []))))
 
 print(f"- Hey, {pet_lover.name}. Are you a pet lover?")
 
