@@ -16,6 +16,9 @@ class Nothing(Error[None]):
     
     def __repr__(self) -> str:
         return "Nothing()"
+    
+    def __del__(self):
+        pass
 
 
 class Some(typing.Generic[Value], Ok[Value]):
@@ -27,6 +30,9 @@ class Some(typing.Generic[Value], Ok[Value]):
     
     def and_then(self, f: typing.Callable[[Value], Option[T]]) -> Option[T]:
         return f(self.value)
+    
+    def __del__(self):
+        pass
 
 
 Option: typing.TypeAlias = Some[Value] | Nothing
