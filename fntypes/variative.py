@@ -58,7 +58,6 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         self: Variative[T, *tuple[P, ...]], 
         t: type = HEAD,
     ) -> Result[T, str]:
-        """Sets `Variative` to single type. By default this type is generic leading type.
         ```python
         v = Variative[str, int]("Hello")
         v.only() # Ok('Hello')
