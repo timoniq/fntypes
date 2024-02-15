@@ -14,7 +14,7 @@ def test_union_only_head():
 
 
 def test_union_only_custom():
-    a = Variative[int, str, list[str]]("String")
+    a = Variative[int, str, list]("String")
     assert a.only(str).unwrap() == "String"
 
     with pytest.raises(TypeError):
