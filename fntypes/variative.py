@@ -55,16 +55,16 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         ...
 
     def only(
-        self: Variative[T, *tuple[T, ...]], 
+        self: Variative[T, *tuple[P, ...]], 
         t: type = HEAD,
     ) -> Result[T, str]:
-        """Sets `Variative` to single type. By default this type is generic leading type
+        """Sets `Variative` to single type. By default this type is generic leading type.
         ```python
-        u: Variative[str, int] = Variative("Hello")
-        u.only() # Ok("Hello")
-        u.only(str) # Ok("Hello")
-        u.only(int) # Err
-        u.only(list) # Err
+        v = Variative[str, int]("Hello")
+        v.only() # Ok('Hello')
+        v.only(str) # Ok('Hello')
+        v.only(int) # Error("Variative[str, int]('Hello') cannot be set only to type <class 'int'>")
+        v.only(list) # Error("Variative[str, int]('Hello') cannot be set only to type <class 'list'>")
         ```
         """
 
@@ -87,7 +87,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         ...
     
     def detach(self):
-        """Detaches head type. To make this customizable Python must implement intersection typing
+        """Detaches head type. To make this customizable Python must implement intersection typing.
         ```python
         v = Variative[str, int]
 

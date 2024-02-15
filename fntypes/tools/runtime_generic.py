@@ -1,17 +1,16 @@
 import typing
 import inspect
-import types
 
 # https://github.com/python/typing/issues/629#issuecomment-829629259
+
 
 class Proxy:
   def __init__(self, generic):
     object.__setattr__(self, '_generic', generic)
 
   def __getattr__(self, name):
-    if typing._is_dunder(name):
-      return getattr(self._generic, name)
-    if name == "copy_with":
+    generic_class_attrs = dir(typing._GenericAlias)  # type: ignore
+    if (typing._is_dunder(name) and generic_class_attrs) or (name in generic_class_attrs):  # type: ignore
       return getattr(self._generic, name)
     origin = self._generic.__origin__
     obj = getattr(origin, name)
@@ -42,7 +41,9 @@ class Proxy:
 
 class RuntimeGeneric:
   def __class_getitem__(cls, key):
-    generic = super().__class_getitem__(key)
+    generic = super().__class_getitem__(key)  # type: ignore
+    if any(typing.get_origin(arg) is not None for arg in typing.get_args(generic)):
+      raise TypeError('Parametrized types are not supported')
     if getattr(generic, '__origin__', None):
       return Proxy(generic)
     else:
