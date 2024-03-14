@@ -41,10 +41,10 @@ print(f"- Hey, {pet_lover.name}. Are you a pet lover?")
 
 match pet_lover.pet:
     case Some(pet):
-        print(f"- Yea! .. {pet.value.name.upper()}!!!! COME HERE")
-        print(f"  Hey, {pet.value.name}, say something")
-        if isinstance(pet.value, CanSpeak):
-            print(f"- {pet.value.sound()}")
+        print(f"- Yea! .. {pet.v.name.upper()}!!!! COME HERE")
+        print(f"  Hey, {pet.v.name}, say something")
+        if isinstance(pet.v, CanSpeak):
+            print(f"- {pet.v.sound()}")
         else:
             print("- ...")
             print("- Oh.. I forgot they can't speak")

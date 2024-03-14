@@ -85,4 +85,16 @@ def send_to_queue(n: int) -> Result[int, str]:
 
 x.and_then(send_to_queue) # <Result: Ok(IndexType(0))>
 x.and_then(send_to_queue).unwrap() # IndexType(1)
+
+
+# Cast
+# Through cast Result type can be converted to other two-states object
+# By default casts for `ok` and `error` states are echo-functions.
+# Thus, only one cast may be set
+
+# Cast returns a union of two states' types
+x.cast() # Will return the same union of Result[float, str]
+x.cast(Some, lambda _: Nothing()) # Will cast it into a Option-like type (quite useful)
+# OR (due to Nothing-type argument suppression)
+x.cast(Some, Nothing)
 ```

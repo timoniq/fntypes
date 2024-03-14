@@ -1,6 +1,6 @@
 from fntypes.result import Result, Ok, Error
 from fntypes.error import UnwrapError
-from fntypes.option import Nothing
+from fntypes.option import Nothing, Some
 from fntypes.result.log_factory import RESULT_ERROR_LOGGER
 import pytest
 
@@ -25,6 +25,8 @@ def test_result_ok():
     assert result.and_then(inc_number).unwrap() == 2
     assert repr(result) == "<Result: Ok(1)>"
     assert result.expect("Should not happen") == 1
+    assert isinstance(result.cast(Some, Nothing), Some)
+    assert result.cast(Some, Nothing).unwrap() == 1
 
 def test_result_err():
     result: Result[int, TypeError] = Error(TypeError("Oh"))
@@ -47,6 +49,13 @@ def test_result_err():
     
     assert isinstance(exc_info._excinfo[1].args[0], ValueError)  # type: ignore
 
+    with pytest.raises(UnwrapError):
+        result.cast(Some, Nothing).unwrap()
+    
+    x = result.cast(Some, Nothing)
+    assert isinstance(x, Nothing)
+    assert x.error is None
+    
 def test_nothing():
     nothing = Nothing()
     with pytest.raises(UnwrapError, match='None'):

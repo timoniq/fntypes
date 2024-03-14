@@ -11,7 +11,7 @@ Err = typing.TypeVar("Err")
 
 
 class Nothing(Error[None]):
-    def __init__(self) -> None:
+    def __init__(self, *_suppress_args) -> None:
         super().__init__(None)
     
     def __repr__(self) -> str:

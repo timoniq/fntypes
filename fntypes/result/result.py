@@ -12,6 +12,8 @@ Value = typing.TypeVar("Value", covariant=True)
 
 R = typing.TypeVar("R", bound="Result")
 
+ECHO = lambda x: x
+
 
 @dataclasses.dataclass(frozen=True, repr=False)
 class Ok(typing.Generic[Value]):
@@ -50,6 +52,9 @@ class Ok(typing.Generic[Value]):
 
     def map_or_else(self, default_f: object, f: typing.Callable[[Value], T], /) -> Ok[T]:
         return Ok(f(self.value))
+    
+    def cast(self, ok: typing.Callable[[Value], T] = ECHO, error: object = ECHO) -> T:
+        return ok(self.value)
 
     def expect(self, error: typing.Any, /) -> Value:
         return self.value
@@ -64,8 +69,8 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin):
 
     error: Err
 
-    tb: str | None = None
-    is_controlled: bool = False
+    _tb: str | None = None
+    _is_controlled: bool = False
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Error):
@@ -113,6 +118,9 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin):
     
     def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> Error[Err]:
         return self
+    
+    def cast(self, ok: object = ECHO, error: typing.Callable[[Err], T] = ECHO) -> T:
+        return error(self.error)
 
 
 Result: typing.TypeAlias = Ok[Value] | Error[Err]

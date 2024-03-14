@@ -19,3 +19,12 @@ def shout(msg: Option[str]) -> None:
 shout(Nothing())  # RRr !!
 shout(Some("arseny"))  # ARSENY !!
 ```
+
+---
+
+As Option is just a Result lacking an error type, an instance of `Result[T, Err]` can be casted into an instance of `Option[T]` with a simple cast expression (Nothing can be passed like this, because it suppresses arguments it receives on initialization):
+
+```python
+def to_option(result: Result[T, Err]) -> Option[T]:
+    return result.cast(Some, Nothing)
+```
