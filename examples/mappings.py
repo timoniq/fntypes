@@ -1,8 +1,8 @@
-from fntypes import Result, Option, Error, Nothing
+from fntypes import Result, Option, Error, Nothing, Some
 
 
 def map_error(result: Result[int, str]) -> Option[int]:
-    return result.cast(error=lambda _: Nothing())
+    return result.cast(Some, Nothing)
 
 
 def map_value(result: Result[int, str]) -> Result[str, str]:
@@ -22,3 +22,4 @@ n = get_n()
 print(map_error(n))  # Nothing()
 print(map_value(n)) # Error("Something happened")
 print(map_or(n)) # 0
+print(n.cast().cast().cast()) # Error("Something happened")
