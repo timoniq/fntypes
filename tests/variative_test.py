@@ -5,6 +5,7 @@ from fntypes import Variative
 def test_union_only_head():
     a = Variative[int, str](5)
     assert a.only().unwrap() == 5
+    assert a.v == 5
 
     b = Variative[int, str]("String")
     with pytest.raises(TypeError):

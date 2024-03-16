@@ -3,7 +3,6 @@ from __future__ import annotations
 import typing
 
 from fntypes.result import Ok, Error
-from fntypes.result.result import Result
 
 Value = typing.TypeVar("Value", covariant=True)
 T = typing.TypeVar("T")

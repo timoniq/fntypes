@@ -13,14 +13,14 @@ Err = typing.TypeVar("Err")
 def unwrapping(
     func: typing.Callable[ParamSpec, Option[T]],
 ) -> typing.Callable[ParamSpec, Option[T]]:
-    ...
+    pass
 
 
 @typing.overload
 def unwrapping(
     func: typing.Callable[ParamSpec, Result[T, Err]],
 ) -> typing.Callable[ParamSpec, Result[T, Err]]:
-    ...
+    pass 
 
 
 def unwrapping(

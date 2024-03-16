@@ -28,6 +28,8 @@ def test_result_ok():
     assert isinstance(result.cast(Some, Nothing), Some)
     assert result.cast(Some, Nothing).unwrap() == 1
 
+    assert result.cast() == result
+
 def test_result_err():
     result: Result[int, TypeError] = Error(TypeError("Oh"))
     with pytest.raises(TypeError):
@@ -51,6 +53,8 @@ def test_result_err():
 
     with pytest.raises(UnwrapError):
         result.cast(Some, Nothing).unwrap()
+
+    assert result.cast() == result
     
     x = result.cast(Some, Nothing)
     assert isinstance(x, Nothing)
@@ -60,6 +64,17 @@ def test_nothing():
     nothing = Nothing()
     with pytest.raises(UnwrapError, match='None'):
         nothing.unwrap()
+    
+    assert repr(nothing) == "Nothing()"
+    assert nothing.map(lambda _: object()) == nothing
+    assert nothing.and_then(lambda x: Some(123)) == nothing
+
+def test_some():
+    option = Some(1)
+    assert repr(option) == "Some(1)"
+    assert option.map(lambda x: x + 1) == Some(2)
+    assert option.and_then(lambda x: Nothing()) == Nothing()
+
     
 
 def test_log_factory():
