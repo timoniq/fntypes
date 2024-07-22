@@ -54,7 +54,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         # Will be in use when typing for the first overload will be improved
         ...
 
-    def only(
+    def only(  # type: ignore
         self: Variative[T, *tuple[P, ...]], 
         t: type = HEAD,
     ) -> Result[T, str]:

@@ -4,25 +4,27 @@ import typing
 
 from fntypes.result import Ok, Error
 
-Value = typing.TypeVar("Value", covariant=True)
 T = typing.TypeVar("T")
-Err = typing.TypeVar("Err")
+Value = typing.TypeVar("Value", covariant=True)
 
 
 class Nothing(Error[None]):
-    def __init__(self, *_suppress_args) -> None:
+    def __init__(self, *_suppress_args: typing.Any) -> None:
         super().__init__(None)
     
     def __repr__(self) -> str:
         return "Nothing()"
     
-    def __del__(self):
+    def __del__(self) -> None:
         pass
 
 
 class Some(typing.Generic[Value], Ok[Value]):
     def __repr__(self) -> str:
         return f"Some({self.value!r})"
+
+    def __del__(self) -> None:
+        pass
     
     def map(self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self.value))
@@ -30,15 +32,8 @@ class Some(typing.Generic[Value], Ok[Value]):
     def and_then(self, f: typing.Callable[[Value], Option[T]]) -> Option[T]:
         return f(self.value)
     
-    def __del__(self):
-        pass
-
 
 Option: typing.TypeAlias = Some[Value] | Nothing
 
 
-__all__ = (
-    "Nothing",
-    "Some",
-    "Option"
-)
+__all__ = ("Nothing", "Some", "Option")

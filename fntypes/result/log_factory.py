@@ -3,6 +3,9 @@ from __future__ import annotations
 import traceback
 import typing
 
+Error = typing.TypeVar("Error", covariant=True)
+
+
 class ResultLoggingFactory:
     """Sigleton for logging result errors."""
 
@@ -10,7 +13,7 @@ class ResultLoggingFactory:
         self,
         log: typing.Callable[[str], None] = lambda _: None,
         traceback_formatter: typing.Callable[[], str] | None = None,
-    ):
+    ) -> None:
         self._log = log
         self._traceback_formatter = traceback_formatter or self.base_traceback_formatter
  
@@ -38,15 +41,16 @@ class ResultLoggingFactory:
         self._traceback_formatter = formatter
 
 
-class ErrorLogFactoryMixin:
+class ErrorLogFactoryMixin(typing.Generic[Error]):
+    _error: Error
+    _tb: str | None
+    _is_controlled: bool
 
-    def __post_init__(self) -> None:
-        tb = RESULT_ERROR_LOGGER.format_traceback(self.error)
-        self._tb = "Result log\n" + tb
+    def __init__(self) -> None:
+        self._tb = "Result log\n" + RESULT_ERROR_LOGGER.format_traceback(self.error)
 
     def __getattribute__(self, __name: str) -> typing.Any:
-        """
-        If control over .error was passed to another logic 
+        """If control over `.error` was passed to another logic 
         (which is considered passed as soon as .error field is accessed) 
         then there is no need to log on event of result deletion."""
 
@@ -54,10 +58,17 @@ class ErrorLogFactoryMixin:
             self._is_controlled = True
         
         return super().__getattribute__(__name)
-    
-    def __del__(self):
+
+    def __del__(self) -> None:
         if self._tb and not self._is_controlled:
             RESULT_ERROR_LOGGER(self._tb)
 
+    @property
+    def error(self) -> Error:
+        return self._error
+
 
 RESULT_ERROR_LOGGER: typing.Final[ResultLoggingFactory] = ResultLoggingFactory()
+
+
+__all__ = ("RESULT_ERROR_LOGGER", "ErrorLogFactoryMixin", "ResultLoggingFactory")
