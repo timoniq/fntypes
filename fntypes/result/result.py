@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import dataclasses
 import typing
 
 from fntypes.result.log_factory import ErrorLogFactoryMixin
@@ -10,19 +9,23 @@ T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
 Value = typing.TypeVar("Value", covariant=True)
 
-R = typing.TypeVar("R", bound="Result")
 
 def _default_ok(value: T) -> "Ok[T]":
     return Ok(value)
 
+
 def _default_error(err: Err) -> "Error[Err]":
     return Error(err)
 
-@dataclasses.dataclass(frozen=True, repr=False)
+
 class Ok(typing.Generic[Value]):
     """`Result.Ok` representing success and containing a value."""
 
-    value: Value
+    __slots__ = ("_value",)
+    __match_args__ = ("value",)
+
+    def __init__(self, value: Value) -> None:
+        self._value = value
 
     def __repr__(self) -> str:
         return f"<Result: Ok({self.value!r})>"
@@ -30,10 +33,14 @@ class Ok(typing.Generic[Value]):
     def __bool__(self) -> typing.Literal[True]:
         return True
     
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Ok):
             return False
         return self.value == other.value
+
+    @property
+    def value(self) -> Value:
+        return self._value
 
     def unwrap(self) -> Value:
         return self.value
@@ -66,16 +73,19 @@ class Ok(typing.Generic[Value]):
         return f(self.value)
 
 
-@dataclasses.dataclass(repr=False)
-class Error(typing.Generic[Err], ErrorLogFactoryMixin):
+class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
     """`Result.Error` representing error and containing an error value."""
 
-    error: Err
+    __slots__ = ("_error", "_tb", "_is_controlled")
+    __match_args__ = ("error",)
 
-    _tb: str | None = None
-    _is_controlled: bool = False
+    def __init__(self, error: Err) -> None:
+        self._error = error
+        self._tb: str | None = None
+        self._is_controlled: bool = False
+        super().__init__()
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Error):
             return False
         return self.error == other.error
@@ -93,10 +103,12 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin):
     def __bool__(self) -> typing.Literal[False]:
         return False
 
+    @property
+    def error(self) -> Err:
+        return self._error
+
     def unwrap(self) -> typing.NoReturn:
-        raise (
-            UnwrapError(self.error)
-        )
+        raise UnwrapError(self.error)
 
     def unwrap_or(self, alternate_value: T, /) -> T:
         return alternate_value
@@ -129,4 +141,5 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin):
 Result: typing.TypeAlias = Ok[Value] | Error[Err]
 Wrapped: typing.TypeAlias = Ok[Value] | Error[typing.Any]
 
-__all__ = ("Ok", "Error", "Result")
+
+__all__ = ("Ok", "Error", "Result", "Wrapped")
