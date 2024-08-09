@@ -13,7 +13,7 @@ class Proxy:
         generic_class_attrs = dir(typing._GenericAlias)  # type: ignore
         if (typing._is_dunder(__name) and generic_class_attrs) or (  # type: ignore
             __name in generic_class_attrs
-        ):  # type: ignore
+        ):
             return getattr(self._generic, __name)
         origin = self._generic.__origin__
         obj = getattr(origin, __name)
@@ -49,7 +49,7 @@ class RuntimeGeneric:
         generic = super().__class_getitem__(__key)  # type: ignore
         
         if any(typing.get_origin(arg) is not None for arg in typing.get_args(generic)):
-            raise TypeError("Parametrized types are not supported")
+            raise TypeError("Parametrized types are not supported.")
         
         if getattr(generic, "__origin__", None):
             return Proxy(generic)
