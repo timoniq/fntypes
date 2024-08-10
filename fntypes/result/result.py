@@ -4,6 +4,7 @@ import typing
 
 from fntypes.result.log_factory import ErrorLogFactoryMixin
 from fntypes.error import UnwrapError
+from reprlib import recursive_repr
 
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
@@ -27,6 +28,7 @@ class Ok(typing.Generic[Value]):
     def __init__(self, value: Value) -> None:
         self._value = value
 
+    @recursive_repr()
     def __repr__(self) -> str:
         return f"<Result: Ok({self.value!r})>"
 
@@ -36,41 +38,41 @@ class Ok(typing.Generic[Value]):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Ok):
             return False
-        return self.value == other.value
+        return self._value == other.value
 
     @property
     def value(self) -> Value:
         return self._value
 
     def unwrap(self) -> Value:
-        return self.value
+        return self._value
 
     def unwrap_or(self, alternate_value: object, /) -> Value:
-        return self.unwrap()
+        return self._value
     
     def unwrap_or_none(self) -> Value:
-        return self.value
+        return self._value
 
     def unwrap_or_other(self, other: object, /) -> Value:
-        return self.value
+        return self._value
 
     def map(self, op: typing.Callable[[Value], T], /) -> Ok[T]:
-        return Ok(op(self.value))
+        return Ok(op(self._value))
 
     def map_or(self, default_value: T, f: typing.Callable[[Value], T], /) -> Ok[T]:
-        return Ok(f(self.value))
+        return Ok(f(self._value))
 
     def map_or_else(self, default_f: object, f: typing.Callable[[Value], T], /) -> Ok[T]:
-        return Ok(f(self.value))
+        return Ok(f(self._value))
     
     def cast(self, ok: typing.Callable[[Value], T] = _default_ok, error: object = _default_error) -> T:
-        return ok(self.value)
+        return ok(self._value)
 
     def expect(self, error: typing.Any, /) -> Value:
-        return self.value
+        return self._value
     
     def and_then(self, f: typing.Callable[[Value], Result[T, Err]]) -> Result[T, Err]:
-        return f(self.value)
+        return f(self._value)
 
 
 class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
@@ -88,16 +90,17 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Error):
             return False
-        return self.error == other.error
+        return self._error == other.error
 
+    @recursive_repr()
     def __repr__(self) -> str:
         return (
             "<Result: Error({}: {!r})>".format(
-                self.error.__class__.__name__,
-                str(self.error),
+                self._error.__class__.__name__,
+                str(self._error),
             )
-            if isinstance(self.error, BaseException)
-            else f"<Result: Error({self.error!r})>"
+            if isinstance(self._error, BaseException)
+            else f"<Result: Error({self._error!r})>"
         )
     
     def __bool__(self) -> typing.Literal[False]:
@@ -126,7 +129,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
         return Ok(default_value)
 
     def map_or_else(self, default_f: typing.Callable[[Err], T], f: object, /) -> Ok[T]:
-        return Ok(default_f(self.error))
+        return Ok(default_f(self._error))
 
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
         raise UnwrapError(error)
@@ -135,7 +138,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
         return self
     
     def cast(self, ok: object = _default_ok, error: typing.Callable[[Err], T] = _default_error) -> T:
-        return error(self.error)
+        return error(self._error)
 
 
 Result: typing.TypeAlias = Ok[Value] | Error[Err]

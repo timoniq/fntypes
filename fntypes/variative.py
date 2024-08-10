@@ -3,25 +3,40 @@ from __future__ import annotations
 import typing
 
 from fntypes.result import Error, Ok, Result
-from fntypes.tools import RuntimeGeneric
+from fntypes.tools.runtime_generic import RuntimeGeneric
+from reprlib import recursive_repr
 
 T = typing.TypeVar("T")
 P = typing.TypeVar("P")
+X = typing.TypeVar("X", bound="Variative")
 Ts = typing.TypeVarTuple("Ts")
 
 HEAD = typing.NewType("HEAD", type)
 
 
 class Variative(RuntimeGeneric, typing.Generic[*Ts]):
-    def __init__(self: Variative[*tuple[T, ...]], value: T) -> None:
-        self._value: typing.Any = value
+    _value: typing.Any
 
+    __slots__ = ("_value",)
+    __match_args__ = ("_value",)
+
+    if typing.TYPE_CHECKING:
+        def __new__(cls: type[X | Variative[*tuple[T, ...]]], value: T) -> type[X]: ...
+
+    else:
+        def __init__(self: Variative[*tuple[T, ...]], value: T) -> None:
+            self._value: typing.Any = value
+
+    @recursive_repr()
     def __repr__(self) -> str:
-        return "Variative[{}]({!r})".format(
-            ", ".join(arg.__name__ if isinstance(arg, type) else repr(arg) for arg in self.get_args()),
+        args = self.get_args()
+        return "Variative{}({!r})".format(
+            "[{}]".format(
+                ", ".join(arg.__name__ if isinstance(arg, type) else repr(arg) for arg in self.get_args()),
+            ) if args else "",
             self._value,
         )
-    
+
     @property
     def v(self: Variative[*tuple[T, ...]]) -> T:
         """Junction; intersection of Variative types."""
@@ -38,7 +53,14 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         """Overload `Proxy.get_args`"""
         
     def get_args(self) -> tuple[*Ts]:  # type: ignore
-        return typing.get_args(self.__orig_class__)  # type: ignore
+        """
+        >>> Variative[str, int].get_args()
+        >>> (str, int)
+        >>> Variative[str, int]("Hello!").get_args()
+        >>> (str, int)
+        """
+
+        return typing.get_args(getattr(self, "__orig_class__", self.__class__))
 
     @typing.overload
     def only(self, t: type[T]) -> Result[T, str]:
