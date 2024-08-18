@@ -2,17 +2,14 @@ import types
 import typing
 
 
+GENERIC_CLASS_ATTRS = set(dir(typing._GenericAlias))  # type: ignore
+
 class Proxy:
     def __init__(self, generic: typing.Any) -> None:
         self._generic = generic
 
     def __getattr__(self, __name: str) -> typing.Any:
-        if not hasattr(self, '_generic_class_attrs'):
-            self._generic_class_attrs = set(dir(typing._GenericAlias))  # type: ignore
-
-        if (typing._is_dunder(__name) and self._generic_class_attrs) or (  # type: ignore
-            __name in self._generic_class_attrs
-        ):
+        if (typing._is_dunder(__name) or __name in GENERIC_CLASS_ATTRS):
             return getattr(self._generic, __name)
 
         origin = self._generic.__origin__
