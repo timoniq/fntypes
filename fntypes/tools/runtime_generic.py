@@ -9,7 +9,7 @@ class Proxy:
         self._generic = generic
 
     def __getattr__(self, __name: str) -> typing.Any:
-        if (typing._is_dunder(__name) or __name in GENERIC_CLASS_ATTRS):
+        if (typing._is_dunder(__name) or __name in GENERIC_CLASS_ATTRS): # type: ignore
             return getattr(self._generic, __name)
 
         origin = self._generic.__origin__
@@ -22,7 +22,7 @@ class Proxy:
 
     def __setattr__(self, name: str, value: typing.Any) -> None:
         if name == "_generic":
-            super().__setattr__(name, value)
+            self._generic = value
         else:
             setattr(self._generic, name, value)
 
@@ -50,6 +50,7 @@ class RuntimeGeneric:
 
         if getattr(generic, "__origin__", None):
             return Proxy(generic)
+        
         return generic
 
 
