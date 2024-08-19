@@ -22,12 +22,15 @@ class Proxy:
 
     def __setattr__(self, name: str, value: typing.Any) -> None:
         if name == "_generic":
-            self._generic = value
+            super().__setattr__(name, value)
         else:
             setattr(self._generic, name, value)
 
     def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         return self._generic(*args, **kwargs)
+    
+    def get_args(self) -> tuple[type[typing.Any], ...]:
+        return typing.get_args(self._generic)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} of {self._generic!r}>"
@@ -38,7 +41,7 @@ class Proxy:
 
     @property
     def __args__(self) -> tuple[type[typing.Any], ...]:
-        return typing.get_args(self._generic)
+        return self.get_args()
 
 
 class RuntimeGeneric:
