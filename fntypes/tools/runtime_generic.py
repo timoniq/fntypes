@@ -1,5 +1,6 @@
 import types
 import typing
+import inspect
 
 
 GENERIC_CLASS_ATTRS = set(dir(typing._GenericAlias))  # type: ignore
@@ -15,8 +16,8 @@ class Proxy:
         origin = self._generic.__origin__
         obj = getattr(origin, __name)
 
-        if callable(obj) and hasattr(obj, '__self__') and isinstance(obj.__self__, type):
-            return lambda *a, **kw: obj(self, *a, **kw)
+        if inspect.ismethod(obj) and hasattr(obj, '__self__') and isinstance(obj.__self__, type):
+            return lambda *a, **kw: obj.__func__(self, *a, **kw)
         
         return obj
 
