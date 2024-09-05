@@ -24,12 +24,12 @@ def unwrapping(
 @typing.overload
 def unwrapping(
     func: typing.Callable[ParamSpec, typing.Awaitable[Option[T]]],
-) -> typing.Callable[ParamSpec, typing.Awaitable[Option[T]]]: ...
+) -> typing.Callable[ParamSpec, typing.Coroutine[object, object, Option[T]]]: ...
 
 @typing.overload
 def unwrapping(
     func: typing.Callable[ParamSpec, typing.Awaitable[Result[T, Err]]],
-) -> typing.Callable[ParamSpec, typing.Awaitable[Result[T, Err]]]: ... 
+) -> typing.Callable[ParamSpec, typing.Coroutine[object, object, Result[T, Err]]]: ... 
 
 
 def unwrapping(
