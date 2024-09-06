@@ -20,6 +20,9 @@ class Nothing(Error[None]):
     def __del__(self) -> None:
         pass
 
+    def and_then(self, f: object) -> Nothing:
+        return Nothing()
+
 
 class Some(typing.Generic[Value], Ok[Value]):
     @recursive_repr()
