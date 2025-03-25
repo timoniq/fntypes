@@ -20,27 +20,37 @@ class LazyCoroResult(typing.Generic[Value, Err]):
     ) -> None:
         self._value = value
 
-    async def unwrap(self) -> Value:
-        return (await self()).unwrap()
+    async def unwrap(self) -> LazyCoro[Value]:
+        async def wrapper() -> Value:
+            return (await self()).unwrap()
 
-    async def unwrap_or(self, alternate_value: T, /) -> Value | T:
-        return (await self()).unwrap_or(alternate_value)
+        return LazyCoro(wrapper)
 
-    async def unwrap_or_none(self) -> Value | None:
-        return (await self()).unwrap_or_none()
+    async def unwrap_or(
+        self, alternate_value: typing.Callable[[], typing.Awaitable[T]], /
+    ) -> LazyCoro[Value | T]:
+        async def wrapper() -> Value | T:
+            return (await self()).unwrap_or(await alternate_value())
+
+        return LazyCoro(wrapper)
+
+    async def unwrap_or_none(self) -> LazyCoro[Value | None]:
+        async def wrapper() -> Value | None:
+            return (await self()).unwrap_or_none()
+
+        return LazyCoro(wrapper)
 
     async def unwrap_or_other(
-        self,
-        other: typing.Callable[
-            [], typing.Coroutine[typing.Any, typing.Any, Result[T, Err]]
-        ],
-        /,
-    ) -> Value | T:
-        match await self():
-            case Ok(value):
-                return value
-            case Error(_):
-                return (await other()).unwrap()
+        self, other: typing.Callable[[], typing.Awaitable[Result[T, Err]]], /
+    ) -> LazyCoro[Value | T]:
+        async def wrapper() -> Value | T:
+            match await self():
+                case Ok(value):
+                    return value
+                case Error(_):
+                    return (await other()).unwrap()
+
+        return LazyCoro(wrapper)
 
     def map(self, op: typing.Callable[[Value], T], /) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
@@ -49,10 +59,12 @@ class LazyCoroResult(typing.Generic[Value, Err]):
         return LazyCoroResult(wrapper)
 
     def map_or(
-        self, default_value: T, f: typing.Callable[[Value], T]
+        self,
+        default_value: typing.Callable[[], typing.Awaitable[T]],
+        f: typing.Callable[[Value], T],
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
-            return (await self()).map_or(default_value, f)
+            return (await self()).map_or(await default_value(), f)
 
         return LazyCoroResult(wrapper)
 
@@ -68,14 +80,23 @@ class LazyCoroResult(typing.Generic[Value, Err]):
         self,
         ok: typing.Callable[[Value], T] = Ok,
         error: typing.Callable[[Err], F] = Error,
-    ) -> T | F:
-        return (await self()).cast(ok, error)
+    ) -> LazyCoro[T | F]:
+        async def wrapper() -> T | F:
+            return (await self()).cast(ok, error)
 
-    async def expect(self, error: typing.Any, /) -> Value:
-        return (await self()).expect(error)
+        return LazyCoro(wrapper)
+
+    async def expect(self, error: typing.Any, /) -> LazyCoro[Value]:
+        async def wrapper() -> Value:
+            return (await self()).expect(error)
+
+        return LazyCoro(wrapper)
 
     def and_then(
-        self, f: typing.Callable[[Value], LazyCoroResult[T, Err]]
+        self,
+        f: typing.Callable[
+            [Value], typing.Callable[[], typing.Awaitable[Result[T, Err]]]
+        ],
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
             match await self():
@@ -86,11 +107,26 @@ class LazyCoroResult(typing.Generic[Value, Err]):
 
         return LazyCoroResult(wrapper)
 
+    def compose(
+        self, f: typing.Callable[[Value], typing.Awaitable[Result[T, Err]]]
+    ) -> LazyCoroResult[T, Err]:
+        async def wrapper() -> Result[T, Err]:
+            match await self():
+                case Ok(value):
+                    return await f(value)
+                case Error(err):
+                    return Error(err)
+
+        return LazyCoroResult(wrapper)
+
     def outer(self) -> LazyCoro[Result[Value, Err]]:
         return LazyCoro(self)
 
     def __call__(self) -> typing.Coroutine[typing.Any, typing.Any, Result[Value, Err]]:
         return self._value()
+
+    def __await__(self) -> typing.Generator[typing.Any, None, Result[Value, Err]]:
+        return self().__await__()
 
 
 __all__ = ("LazyCoroResult",)
