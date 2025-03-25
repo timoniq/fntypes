@@ -20,13 +20,13 @@ class LazyCoroResult(typing.Generic[Value, Err]):
     ) -> None:
         self._value = value
 
-    async def unwrap(self) -> LazyCoro[Value]:
+    def unwrap(self) -> LazyCoro[Value]:
         async def wrapper() -> Value:
             return (await self()).unwrap()
 
         return LazyCoro(wrapper)
 
-    async def unwrap_or(
+    def unwrap_or(
         self, alternate_value: typing.Callable[[], typing.Awaitable[T]], /
     ) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
@@ -38,13 +38,13 @@ class LazyCoroResult(typing.Generic[Value, Err]):
 
         return LazyCoro(wrapper)
 
-    async def unwrap_or_none(self) -> LazyCoro[Value | None]:
+    def unwrap_or_none(self) -> LazyCoro[Value | None]:
         async def wrapper() -> Value | None:
             return (await self()).unwrap_or_none()
 
         return LazyCoro(wrapper)
 
-    async def unwrap_or_other(
+    def unwrap_or_other(
         self, other: typing.Callable[[], typing.Awaitable[Result[T, Err]]], /
     ) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
@@ -84,7 +84,7 @@ class LazyCoroResult(typing.Generic[Value, Err]):
 
         return LazyCoroResult(wrapper)
 
-    async def cast(
+    def cast(
         self,
         ok: typing.Callable[[Value], T] = Ok,
         error: typing.Callable[[Err], F] = Error,
@@ -94,7 +94,7 @@ class LazyCoroResult(typing.Generic[Value, Err]):
 
         return LazyCoro(wrapper)
 
-    async def expect(self, error: typing.Any, /) -> LazyCoro[Value]:
+    def expect(self, error: typing.Any, /) -> LazyCoro[Value]:
         async def wrapper() -> Value:
             return (await self()).expect(error)
 
