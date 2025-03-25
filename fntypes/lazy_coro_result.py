@@ -30,7 +30,11 @@ class LazyCoroResult(typing.Generic[Value, Err]):
         self, alternate_value: typing.Callable[[], typing.Awaitable[T]], /
     ) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
-            return (await self()).unwrap_or(await alternate_value())
+            match await self():
+                case Ok(value):
+                    return value
+                case Error(_):
+                    return await alternate_value()
 
         return LazyCoro(wrapper)
 
@@ -64,7 +68,11 @@ class LazyCoroResult(typing.Generic[Value, Err]):
         f: typing.Callable[[Value], T],
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
-            return (await self()).map_or(await default_value(), f)
+            match await self():
+                case Ok(value):
+                    return Ok(f(value))
+                case Error(_):
+                    return Ok(await default_value())
 
         return LazyCoroResult(wrapper)
 
