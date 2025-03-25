@@ -20,7 +20,7 @@ class Nothing(Error[None]):
     def __del__(self) -> None:
         pass
 
-    def and_then(self, f: object, /) -> Nothing:
+    def then(self, f: object, /) -> Nothing:
         return Nothing()
 
 
@@ -34,8 +34,8 @@ class Some(typing.Generic[Value], Ok[Value]):
 
     def map(self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self._value))
-
-    def and_then(self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:  # type: ignore
+    
+    def then(self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:
         return f(self._value)
 
 

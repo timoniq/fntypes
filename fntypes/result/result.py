@@ -77,10 +77,8 @@ class Ok(typing.Generic[Value]):
 
     def expect(self, error: typing.Any, /) -> Value:
         return self._value
-
-    def and_then(
-        self, f: typing.Callable[[Value], Result[T, Err]], /
-    ) -> Result[T, Err]:
+    
+    def then(self, f: typing.Callable[[Value], Result[T, Err]], /) -> Result[T, Err]:
         return f(self._value)
 
 
@@ -142,8 +140,8 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
 
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
         raise UnwrapError(error)
-
-    def and_then(self, f: typing.Callable[..., Result[T, Err]], /) -> Error[Err]:
+    
+    def then(self, f: typing.Callable[..., Result[T, Err]], /) -> Error[Err]:
         return self
 
     def cast(

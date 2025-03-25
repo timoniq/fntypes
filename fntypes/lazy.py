@@ -13,12 +13,6 @@ class Lazy(typing.Generic[Value]):
     def map(self, op: typing.Callable[[Value], T], /) -> Lazy[T]:
         return Lazy(lambda: op(self()))
 
-    def and_then(self, f: typing.Callable[[Value], Lazy[T]]) -> Lazy[T]:
-        return Lazy(lambda: f(self())())
-
-    def compose(self, f: typing.Callable[[Value], T]) -> Lazy[T]:
-        return Lazy(lambda: f(self()))
-
     def __call__(self) -> Value:
         return self._value()
 

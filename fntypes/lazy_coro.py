@@ -21,15 +21,7 @@ class LazyCoro(typing.Generic[Value]):
 
         return LazyCoro(wrapper)
 
-    def and_then(
-        self, f: typing.Callable[[Value], typing.Callable[[], typing.Awaitable[T]]]
-    ) -> LazyCoro[T]:
-        async def wrapper() -> T:
-            return await f(await self())()
-
-        return LazyCoro(wrapper)
-
-    def compose(self, f: typing.Callable[[Value], typing.Awaitable[T]]) -> LazyCoro[T]:
+    def then(self, f: typing.Callable[[Value], typing.Awaitable[T]]) -> LazyCoro[T]:
         async def wrapper() -> T:
             return await f(await self())
 

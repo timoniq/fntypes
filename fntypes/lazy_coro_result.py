@@ -100,22 +100,7 @@ class LazyCoroResult(typing.Generic[Value, Err]):
 
         return LazyCoro(wrapper)
 
-    def and_then(
-        self,
-        f: typing.Callable[
-            [Value], typing.Callable[[], typing.Awaitable[Result[T, Err]]]
-        ],
-    ) -> LazyCoroResult[T, Err]:
-        async def wrapper() -> Result[T, Err]:
-            match await self():
-                case Ok(value):
-                    return await f(value)()
-                case Error(err):
-                    return Error(err)
-
-        return LazyCoroResult(wrapper)
-
-    def compose(
+    def then(
         self, f: typing.Callable[[Value], typing.Awaitable[Result[T, Err]]]
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:

@@ -70,7 +70,7 @@ x.map(lambda n: lst[n]).map(str.upper) # <Result: Ok("VARENIKI")>
 x.expect("Division failure") # Raises an exception: UnwrapError("Division failure")
 # Expect is needed to transform error types
 
-# .and_then - is an essential operation to compose multiple result returning functions
+# .then - is an essential operation to compose multiple result returning functions
 # Probably you may know it as bind operation
 # Error type of those must be same !
 # Argument is of value type, returning result can be of a different type
@@ -83,8 +83,8 @@ def send_to_queue(n: int) -> Result[int, str]:
     queue.append(n)
     return Ok(len(queue) - 1) # index in queue
 
-x.and_then(send_to_queue) # <Result: Ok(IndexType(0))>
-x.and_then(send_to_queue).unwrap() # IndexType(1)
+x.then(send_to_queue) # <Result: Ok(IndexType(0))>
+x.then(send_to_queue).unwrap() # IndexType(1)
 
 
 # Cast
