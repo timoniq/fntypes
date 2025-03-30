@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing
 
 from fntypes.lazy_coro import LazyCoro
+from fntypes.tools import acache
 from fntypes.result import Ok, Error, Result
 
 T = typing.TypeVar("T")
@@ -111,6 +112,9 @@ class LazyCoroResult(typing.Generic[Value, Err]):
                     return Error(err)
 
         return LazyCoroResult(wrapper)
+
+    def acache(self) -> LazyCoroResult[Value, Err]:
+        return LazyCoroResult(acache(self))
 
     def outer(self) -> LazyCoro[Result[Value, Err]]:
         return LazyCoro(self)

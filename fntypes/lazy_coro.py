@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing
 
 from fntypes.lazy import Lazy
+from fntypes.tools import acache
 
 T = typing.TypeVar("T")
 Value = typing.TypeVar("Value", covariant=True)
@@ -26,6 +27,9 @@ class LazyCoro(typing.Generic[Value]):
             return await f(await self())
 
         return LazyCoro(wrapper)
+
+    def acache(self) -> LazyCoro[Value]:
+        return LazyCoro(acache(self))
 
     def outer(self) -> Lazy[typing.Coroutine[typing.Any, typing.Any, Value]]:
         return Lazy(self)
