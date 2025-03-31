@@ -75,7 +75,6 @@ def test_some():
     assert option.map(lambda x: x + 1) == Some(2)
     assert option.and_then(lambda x: Nothing()) == Nothing()
 
-    
 
 def test_log_factory():
     dct = {}
