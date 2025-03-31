@@ -35,7 +35,6 @@ def unwrapping(
 def unwrapping(
     func: typing.Callable[ParamSpec, T],
 ) -> typing.Callable[ParamSpec, T]:
-    
     if asyncio.iscoroutinefunction(func):
         @wraps(func)
         async def __call__(  # type: ignore
@@ -45,17 +44,17 @@ def unwrapping(
             try:
                 return await func(*args, **kwargs)
             except UnwrapError as e:
-                return Error(e.err)
+                return Error(e.error)  # type: ignore
     else:
         @wraps(func)
-        def __call__(
+        def __call__(  # type: ignore
             *args: typing.Any, 
             **kwargs: typing.Any,
         ):
             try: 
                 return func(*args, **kwargs)
             except UnwrapError as e:
-                return Error(e.err)  # type: ignore
+                return Error(e.error)  # type: ignore
 
     return __call__  # type: ignore
 

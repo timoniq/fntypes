@@ -79,7 +79,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
     def only(  # type: ignore
         self: Variative[T, *tuple[P, ...]], 
         t: type = HEAD,
-    ) -> Result[T, str]:
+    ) -> Result[T, TypeError]:
         """Sets `Variative` to single type. By default this type is generic leading type.
         ```python
         v = Variative[str, int]("Hello")
@@ -93,7 +93,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         if t == HEAD:
             t = self.get_args()[0]  # type: ignore
         if not isinstance(self._value, t):
-            return Error(f"{repr(self)} cannot be set only to type {t}")
+            return Error(TypeError(f"{repr(self)} cannot be set only to type {t}"))
         return Ok(self._value)  # type: ignore
     
     @typing.overload
@@ -105,7 +105,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         ...
 
     @typing.overload
-    def detach(self: Variative[P, *tuple[T, ...]]) -> Result[Variative[T], str]:
+    def detach(self: Variative[P, *tuple[T, ...]]) -> Result[Variative[T], TypeError]:
         ...
     
     def detach(self):
@@ -121,7 +121,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
 
         head, *tail = self.get_args()
         if isinstance(self._value, head) and not isinstance(self._value, tuple(tail)):  # type: ignore
-            return Error(f"{repr(self)} is of type {head}. Thus, head cannot be detached")
+            return Error(TypeError(f"{repr(self)} is of type {head}. Thus, head cannot be detached"))
         if len(self.get_args()) - 1 == 1:
             return Ok(self._value)
         return Ok(Variative[*self.get_args()[1:]](self._value))  # type: ignore
