@@ -1,4 +1,4 @@
-from fntypes import Result, Option, Error, Nothing, Some
+from fntypes import Error, Nothing, Option, Result, Some
 
 
 def map_error(result: Result[int, str]) -> Option[int]:
@@ -20,6 +20,6 @@ def get_n() -> Result[int, str]:
 n = get_n()
 
 print(map_error(n))  # Nothing()
-print(map_value(n)) # Error("Something happened")
-print(map_or(n)) # 0
-print(n.cast().cast().cast()) # Error("Something happened")
+print(map_value(n))  # Error("Something happened")
+print(map_or(n))  # 0
+print(n.cast().cast().cast())  # Error("Something happened")

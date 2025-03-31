@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import typing
+from reprlib import recursive_repr
 
 from fntypes.result import Error, Ok, Result
 from fntypes.tools.runtime_generic import RuntimeGeneric
-from reprlib import recursive_repr
 
 T = typing.TypeVar("T")
 P = typing.TypeVar("P")
@@ -21,10 +21,14 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
     __match_args__ = ("_value",)
 
     if typing.TYPE_CHECKING:
-        def __new__(cls: type[X | Variative[*tuple[T, ...]]], value: T) -> type[X]: ...
+
+        def __new__(
+            cls: type[X | Variative[*tuple[T, ...]]], value: T, /
+        ) -> type[X]: ...
 
     else:
-        def __init__(self: Variative[*tuple[T, ...]], value: T) -> None:
+
+        def __init__(self: Variative[*tuple[T, ...]], value: T, /) -> None:
             self._value: typing.Any = value
 
     @recursive_repr()
@@ -32,8 +36,13 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         args = self.get_args()
         return "Variative{}({!r})".format(
             "[{}]".format(
-                ", ".join(arg.__name__ if isinstance(arg, type) else repr(arg) for arg in self.get_args()),
-            ) if args else "",
+                ", ".join(
+                    arg.__name__ if isinstance(arg, type) else repr(arg)
+                    for arg in self.get_args()
+                ),
+            )
+            if args
+            else "",
             self._value,
         )
 
@@ -51,7 +60,7 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
     @classmethod
     def get_args(cls) -> tuple[*Ts]:
         """Overload `Proxy.get_args`"""
-        
+
     def get_args(self) -> tuple[*Ts]:  # type: ignore
         """
         >>> Variative[str, int].get_args()
@@ -68,16 +77,15 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         ...
 
     @typing.overload
-    def only(self: Variative[T, *tuple[P, ...]], t = HEAD) -> Result[T, str]:
-        ...
-    
+    def only(self: Variative[T, *tuple[P, ...]], t=HEAD) -> Result[T, str]: ...
+
     @typing.overload
     def only(self, t: type) -> Error[str]:
         # Will be in use when typing for the first overload will be improved
         ...
 
     def only(  # type: ignore
-        self: Variative[T, *tuple[P, ...]], 
+        self: Variative[T, *tuple[P, ...]],
         t: type = HEAD,
     ) -> Result[T, TypeError]:
         """Sets `Variative` to single type. By default this type is generic leading type.
@@ -95,19 +103,18 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
         if not isinstance(self._value, t):
             return Error(TypeError(f"{repr(self)} cannot be set only to type {t}"))
         return Ok(self._value)  # type: ignore
-    
-    @typing.overload
-    def detach(self: Variative[P, T]) -> Ok[T]:
-        ...
 
     @typing.overload
-    def detach(self: Variative[P, *tuple[T, ...]]) -> Ok[Variative[T]]:
-        ...
+    def detach(self: Variative[P, T]) -> Ok[T]: ...
 
     @typing.overload
-    def detach(self: Variative[P, *tuple[T, ...]]) -> Result[Variative[T], TypeError]:
-        ...
-    
+    def detach(self: Variative[P, *tuple[T, ...]]) -> Ok[Variative[T]]: ...
+
+    @typing.overload
+    def detach(
+        self: Variative[P, *tuple[T, ...]],
+    ) -> Result[Variative[T], TypeError]: ...
+
     def detach(self):
         """Detaches head type. To make this customizable Python must implement intersection typing.
         ```python
@@ -121,7 +128,11 @@ class Variative(RuntimeGeneric, typing.Generic[*Ts]):
 
         head, *tail = self.get_args()
         if isinstance(self._value, head) and not isinstance(self._value, tuple(tail)):  # type: ignore
-            return Error(TypeError(f"{repr(self)} is of type {head}. Thus, head cannot be detached"))
+            return Error(
+                TypeError(
+                    f"{repr(self)} is of type {head}. Thus, head cannot be detached"
+                )
+            )
         if len(self.get_args()) - 1 == 1:
             return Ok(self._value)
         return Ok(Variative[*self.get_args()[1:]](self._value))  # type: ignore

@@ -1,10 +1,10 @@
 """Common Objects for *all* import"""
 
-from .option import Option, Some, Nothing
-from .result import RESULT_ERROR_LOGGER, Result, Ok, Error, Wrapped
 from .error import UnwrapError
-from .variative import Variative
+from .option import Nothing, Option, Some
+from .result import RESULT_ERROR_LOGGER, Error, Ok, Result, Wrapped
 from .tools.unwrapping import unwrapping
+from .variative import Variative
 
 __all__ = (
     "RESULT_ERROR_LOGGER",

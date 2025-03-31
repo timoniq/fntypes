@@ -1,11 +1,13 @@
-from fntypes import Variative, Option, Some
 import dataclasses
 import typing
 
+from fntypes import Option, Some, Variative
+
+
 @typing.runtime_checkable
 class CanSpeak(typing.Protocol):
-    def sound(self) -> str:
-        ...
+    def sound(self) -> str: ...
+
 
 @dataclasses.dataclass
 class Cat(CanSpeak):
@@ -14,6 +16,7 @@ class Cat(CanSpeak):
 
     def sound(self) -> str:
         return "Meow-meow"
+
 
 @dataclasses.dataclass
 class Dog(CanSpeak):
@@ -48,7 +51,7 @@ match pet_lover.pet:
         else:
             print("- ...")
             print("- Oh.. I forgot they can't speak")
-        
+
         if cat := pet.only(Cat).unwrap_or(None):
             print("- I love cats!! Does she have kittens?")
             if not cat.kittens:

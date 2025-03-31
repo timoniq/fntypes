@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import typing
-
-from fntypes.result import Ok, Error
 from reprlib import recursive_repr
+
+from fntypes.result import Error, Ok
 
 T = typing.TypeVar("T")
 Value = typing.TypeVar("Value", covariant=True)
@@ -16,11 +16,11 @@ class Nothing(Error[None]):
     @recursive_repr()
     def __repr__(self) -> str:
         return "Nothing()"
-    
+
     def __del__(self) -> None:
         pass
 
-    def and_then(self, f: object) -> Nothing:
+    def and_then(self, f: object, /) -> Nothing:
         return Nothing()
 
 
@@ -31,13 +31,13 @@ class Some(typing.Generic[Value], Ok[Value]):
 
     def __del__(self) -> None:
         pass
-    
+
     def map(self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self._value))
-    
-    def and_then(self, f: typing.Callable[[Value], Option[T]]) -> Option[T]:
+
+    def and_then(self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:  # type: ignore
         return f(self._value)
-    
+
 
 Option: typing.TypeAlias = Some[Value] | Nothing
 
