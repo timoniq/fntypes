@@ -28,7 +28,7 @@ class LazyCoro(typing.Generic[Value]):
 
         return LazyCoro(wrapper)
 
-    def acache(self) -> LazyCoro[Value]:
+    def cache(self) -> LazyCoro[Value]:
         return LazyCoro(acache(self))
 
     def outer(self) -> Lazy[typing.Coroutine[typing.Any, typing.Any, Value]]:

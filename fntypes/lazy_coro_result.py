@@ -113,7 +113,7 @@ class LazyCoroResult(typing.Generic[Value, Err]):
 
         return LazyCoroResult(wrapper)
 
-    def acache(self) -> LazyCoroResult[Value, Err]:
+    def cache(self) -> LazyCoroResult[Value, Err]:
         return LazyCoroResult(acache(self))
 
     def outer(self) -> LazyCoro[Result[Value, Err]]:
