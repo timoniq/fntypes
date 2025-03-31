@@ -4,19 +4,18 @@ import typing
 from fntypes.option import Nothing, Some, Option
 
 T = typing.TypeVar("T")
-P = typing.ParamSpec("P")
 
 
-def cache(func: typing.Callable[P, T]) -> typing.Callable[P, T]:
+def cache(func: typing.Callable[[], T]) -> typing.Callable[[], T]:
     cached: Option[T] = Nothing()
 
     @functools.wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper() -> T:
         nonlocal cached
 
         match cached:
             case Nothing():
-                cached = Some(result := func(*args, **kwargs))
+                cached = Some(result := func())
             case Some(result):
                 pass
 
@@ -26,17 +25,17 @@ def cache(func: typing.Callable[P, T]) -> typing.Callable[P, T]:
 
 
 def acache(
-    func: typing.Callable[P, typing.Coroutine[typing.Any, typing.Any, T]],
-) -> typing.Callable[P, typing.Coroutine[typing.Any, typing.Any, T]]:
+    func: typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, T]],
+) -> typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, T]]:
     cached: Option[T] = Nothing()
 
     @functools.wraps(func)
-    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+    async def wrapper() -> T:
         nonlocal cached
 
         match cached:
             case Nothing():
-                cached = Some(result := await func(*args, **kwargs))
+                cached = Some(result := await func())
             case Some(result):
                 pass
 
