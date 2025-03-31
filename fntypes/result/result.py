@@ -70,27 +70,18 @@ class Ok(typing.Generic[Value]):
     ) -> Ok[T]:
         return Ok(f(self._value))
 
-    def cast(
-        self,
-        ok: typing.Callable[[Value], T] = _default_ok,
-        error: object = _default_error,
-        /,
-    ) -> T:
+    def cast(self, ok: typing.Callable[[Value], T] = _default_ok, error: object = _default_error, /) -> T:
         return ok(self._value)
 
     def expect(self, error: typing.Any, /) -> Value:
         return self._value
-    
+
     def then(self, f: typing.Callable[[Value], Result[T, Err]], /) -> Result[T, Err]:
         return f(self._value)
-    
+
     def to_coro(self) -> LazyCoroResult[Value, typing.Any]:
-        from fntypes import LazyCoroResult
-
-        async def wrapper() -> Result[Value, typing.Any]:
-            return self
-
-        return LazyCoroResult(wrapper)
+        from fntypes import LazyCoroResult, LazyCoro
+        return LazyCoroResult(LazyCoro.pure(self))
 
 
 class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
@@ -151,25 +142,16 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
 
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
         raise UnwrapError(error)
-    
+
     def then(self, f: typing.Callable[..., Result[T, Err]], /) -> Error[Err]:
         return self
 
-    def cast(
-        self,
-        ok: object = _default_ok,
-        error: typing.Callable[[Err], T] = _default_error,
-        /,
-    ) -> T:
+    def cast(self, ok: object = _default_ok, error: typing.Callable[[Err], T] = _default_error, /) -> T:
         return error(self._error)
-    
+
     def to_coro(self) -> LazyCoroResult[typing.Any, Err]:
-        from fntypes import LazyCoroResult
-
-        async def wrapper() -> Result[typing.Any, Err]:
-            return self
-
-        return LazyCoroResult(wrapper)
+        from fntypes import LazyCoroResult, LazyCoro
+        return LazyCoroResult(LazyCoro.pure(self))
 
 
 Result: typing.TypeAlias = Ok[Value] | Error[Err]

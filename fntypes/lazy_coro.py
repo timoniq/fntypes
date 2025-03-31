@@ -16,6 +16,13 @@ class LazyCoro(typing.Generic[Value]):
     ) -> None:
         self._value = value
 
+    @staticmethod
+    def pure(value: T) -> LazyCoro[T]:
+        async def wrapper() -> T:
+            return value
+
+        return LazyCoro(wrapper)
+
     def map(self, op: typing.Callable[[Value], T], /) -> LazyCoro[T]:
         async def wrapper() -> T:
             return op(await self())

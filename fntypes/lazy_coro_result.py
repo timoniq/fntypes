@@ -21,6 +21,13 @@ class LazyCoroResult(typing.Generic[Value, Err]):
     ) -> None:
         self._value = value
 
+    @staticmethod
+    def pure(value: T) -> LazyCoroResult[T, typing.Any]:
+        async def wrapper() -> Result[T, typing.Any]:
+            return Ok(value)
+
+        return LazyCoroResult(wrapper)
+
     def unwrap(self) -> LazyCoro[Value]:
         async def wrapper() -> Value:
             return (await self()).unwrap()
