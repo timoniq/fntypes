@@ -11,7 +11,7 @@ Value = typing.TypeVar("Value", covariant=True)
 class Lazy(typing.Generic[Value]):
     def __init__(self, value: typing.Callable[[], Value]) -> None:
         self._value = value
-    
+
     @staticmethod
     def pure(value: T) -> Lazy[T]:
         return Lazy(lambda: value)

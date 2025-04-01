@@ -80,13 +80,15 @@ class UnwrapError(typing.Generic[T], BaseException):
         def __init__(self, error=NOERROR, /, *args):
             other_args = (
                 ()
-                if error is NOERROR
-                or _is_exception(error)
-                and isinstance(error, type)
-                else (error,) if not isinstance(error, tuple) else error
+                if error is NOERROR or _is_exception(error) and isinstance(error, type)
+                else (error,)
+                if not isinstance(error, tuple)
+                else error
             )
             super().__init__(
-                *other_args if not _is_exception(error) or isinstance(error, type) else error.args,
+                *other_args
+                if not _is_exception(error) or isinstance(error, type)
+                else error.args,
                 *args,
             )
             self.__error__ = () if error is NOERROR else error

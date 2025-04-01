@@ -34,7 +34,7 @@ class Some(typing.Generic[Value], Ok[Value]):
 
     def map(self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self._value))
-    
+
     def then(self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:
         return f(self._value)
 

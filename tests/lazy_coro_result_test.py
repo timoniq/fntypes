@@ -39,12 +39,12 @@ async def test_result_err():
 
     with pytest.raises(UnwrapError) as exc_info:
         await result.expect(ValueError())
-    
+
     assert isinstance(exc_info._excinfo[1].args[0], ValueError)  # type: ignore
 
     with pytest.raises(UnwrapError):
         (await result.cast(Some, Nothing)).unwrap()
-    
+
     x = await result.cast(Some, Nothing)
     assert isinstance(x, Nothing)
     assert x.error is None
