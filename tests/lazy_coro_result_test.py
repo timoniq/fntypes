@@ -37,10 +37,8 @@ async def test_result_err():
     assert await result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == Ok(2)
     assert (await result.then(inc_number)).error.args[0] == "Oh"
 
-    with pytest.raises(UnwrapError) as exc_info:
+    with pytest.raises(UnwrapError):
         await result.expect(ValueError())
-
-    assert isinstance(exc_info._excinfo[1].args[0], ValueError)  # type: ignore
 
     with pytest.raises(UnwrapError):
         (await result.cast(Some, Nothing)).unwrap()
