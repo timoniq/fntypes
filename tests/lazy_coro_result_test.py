@@ -10,7 +10,7 @@ async def inc_number(n: int) -> Result[int, TypeError]:
 
 
 async def test_result_ok():
-    result = Ok(1).to_coro()
+    result = Ok(1).to_async()
     assert await result.unwrap() == 1
     assert await result.unwrap_or(LazyCoro.pure(2)) == 1
     assert await result.unwrap_or_none() == 1
@@ -26,7 +26,7 @@ async def test_result_ok():
 
 
 async def test_result_err():
-    result = Error(TypeError("Oh")).to_coro()
+    result = Error(TypeError("Oh")).to_async()
     with pytest.raises(TypeError):
         await result.unwrap()
 

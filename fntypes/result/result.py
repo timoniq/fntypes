@@ -84,7 +84,7 @@ class Ok(typing.Generic[Value]):
     def then(self, f: typing.Callable[[Value], Result[T, Err]], /) -> Result[T, Err]:
         return f(self._value)
 
-    def to_coro(self) -> LazyCoroResult[Value, typing.Any]:
+    def to_async(self) -> LazyCoroResult[Value, typing.Any]:
         from fntypes import LazyCoroResult, LazyCoro
 
         return LazyCoroResult(LazyCoro.pure(self))
@@ -160,7 +160,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
     ) -> T:
         return error(self._error)
 
-    def to_coro(self) -> LazyCoroResult[typing.Any, Err]:
+    def to_async(self) -> LazyCoroResult[typing.Any, Err]:
         from fntypes import LazyCoroResult, LazyCoro
 
         return LazyCoroResult(LazyCoro.pure(self))
