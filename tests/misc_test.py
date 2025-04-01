@@ -1,23 +1,32 @@
-from fntypes.misc import this, either
-from fntypes.result import Ok, Error
+from fntypes.misc import either, this
+from fntypes.result import Error, Ok
 
 
-def test_this():
+def test_this() -> None:
     assert this(1) == 1
 
 
-def test_either():
-    assert either(
-        Ok(1),
-        lambda: Ok(2),
-    ).unwrap() == 1
+def test_either() -> None:
+    assert (
+        either(
+            Ok(1),
+            lambda: Ok(2),
+        ).unwrap()
+        == 1
+    )
 
-    assert either(
-        Error("oops"),
-        lambda: Ok(10),
-    ).unwrap() == 10
+    assert (
+        either(
+            Error("oops"),
+            lambda: Ok(10),
+        ).unwrap()
+        == 10
+    )
 
-    assert either(
-        Error("oops"),
-        lambda: Error("shmoops"),
-    ).error == "shmoops"
+    assert (
+        either(
+            Error("oops"),
+            lambda: Error("shmoops"),
+        ).error
+        == "shmoops"
+    )

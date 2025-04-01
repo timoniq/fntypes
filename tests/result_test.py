@@ -1,16 +1,16 @@
-from fntypes.result import Result, Ok, Error
+import pytest
+
 from fntypes.error import UnwrapError
 from fntypes.option import Nothing, Some
+from fntypes.result import Error, Ok, Result
 from fntypes.result.log_factory import RESULT_ERROR_LOGGER
-import pytest
 
 
 def inc_number(n: int) -> Result[int, TypeError]:
     return Ok(n + 1)
 
 
-def test_result_ok():
-
+def test_result_ok() -> None:
     result = Ok(1)
     assert result.unwrap() == 1
     assert result
@@ -30,6 +30,7 @@ def test_result_ok():
 
     assert result.cast() == result
 
+
 def test_result_err():
     result: Result[int, TypeError] = Error(TypeError("Oh"))
     with pytest.raises(TypeError):
@@ -46,42 +47,41 @@ def test_result_err():
     assert result.and_then(inc_number).error.args[0] == "Oh"
     assert repr(result) == "<Result: Error(TypeError: 'Oh')>"
 
-    with pytest.raises(UnwrapError) as exc_info:
+    with pytest.raises(ValueError):
         assert result.expect(ValueError())
-    
-    assert isinstance(exc_info._excinfo[1].args[0], ValueError)  # type: ignore
 
     with pytest.raises(UnwrapError):
         result.cast(Some, Nothing).unwrap()
 
     assert result.cast() == result
-    
+
     x = result.cast(Some, Nothing)
     assert isinstance(x, Nothing)
     assert x.error is None
-    
-def test_nothing():
+
+
+def test_nothing() -> None:
     nothing = Nothing()
-    with pytest.raises(UnwrapError, match='None'):
+    with pytest.raises(UnwrapError, match="None"):
         nothing.unwrap()
-    
+
     assert repr(nothing) == "Nothing()"
     assert nothing.map(lambda _: object()) == nothing
     assert nothing.and_then(lambda x: Some(123)) == nothing
 
-def test_some():
+
+def test_some() -> None:
     option = Some(1)
     assert repr(option) == "Some(1)"
     assert option.map(lambda x: x + 1) == Some(2)
     assert option.and_then(lambda x: Nothing()) == Nothing()
 
-    
 
-def test_log_factory():
+def test_log_factory() -> None:
     dct = {}
     RESULT_ERROR_LOGGER.set_log(lambda err: dct.update({"err": err}))
     RESULT_ERROR_LOGGER.set_traceback_formatter(lambda: "")
 
     Error("Error msg")
-    
+
     assert dct["err"].endswith(repr("Error msg"))

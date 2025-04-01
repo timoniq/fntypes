@@ -1,8 +1,8 @@
-from .option import Option, Nothing, Some
-from .variative import Variative
-from .result import Result, Error, Ok, Wrapped
+from .misc import either, this
+from .option import Nothing, Option, Some
+from .result import Error, Ok, Result, Wrapped
 from .tools import unwrapping
-from .misc import this, either
+from .variative import Variative
 
 __all__ = (
     "Option",

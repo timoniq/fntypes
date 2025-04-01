@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import typing
-
-from fntypes.result.log_factory import ErrorLogFactoryMixin
-from fntypes.error import UnwrapError
 from reprlib import recursive_repr
+
+from fntypes.error import UnwrapError
+from fntypes.result.log_factory import ErrorLogFactoryMixin
 
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
@@ -25,7 +25,7 @@ class Ok(typing.Generic[Value]):
     __slots__ = ("_value",)
     __match_args__ = ("value",)
 
-    def __init__(self, value: Value) -> None:
+    def __init__(self, value: Value, /) -> None:
         self._value = value
 
     @recursive_repr()
@@ -34,7 +34,7 @@ class Ok(typing.Generic[Value]):
 
     def __bool__(self) -> typing.Literal[True]:
         return True
-    
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Ok):
             return False
@@ -49,7 +49,7 @@ class Ok(typing.Generic[Value]):
 
     def unwrap_or(self, alternate_value: object, /) -> Value:
         return self._value
-    
+
     def unwrap_or_none(self) -> Value:
         return self._value
 
@@ -62,16 +62,25 @@ class Ok(typing.Generic[Value]):
     def map_or(self, default_value: T, f: typing.Callable[[Value], T], /) -> Ok[T]:
         return Ok(f(self._value))
 
-    def map_or_else(self, default_f: object, f: typing.Callable[[Value], T], /) -> Ok[T]:
+    def map_or_else(
+        self, default_f: object, f: typing.Callable[[Value], T], /
+    ) -> Ok[T]:
         return Ok(f(self._value))
-    
-    def cast(self, ok: typing.Callable[[Value], T] = _default_ok, error: object = _default_error) -> T:
+
+    def cast(
+        self,
+        ok: typing.Callable[[Value], T] = _default_ok,
+        error: object = _default_error,
+        /,
+    ) -> T:
         return ok(self._value)
 
     def expect(self, error: typing.Any, /) -> Value:
         return self._value
-    
-    def and_then(self, f: typing.Callable[[Value], Result[T, Err]]) -> Result[T, Err]:
+
+    def and_then(
+        self, f: typing.Callable[[Value], Result[T, Err]], /
+    ) -> Result[T, Err]:
         return f(self._value)
 
 
@@ -81,15 +90,15 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
     __slots__ = ("_error", "_tb", "_is_controlled")
     __match_args__ = ("error",)
 
-    def __init__(self, error: Err) -> None:
+    def __init__(self, error: Err, /) -> None:
         self._error = error
         self._tb: str | None = None
         self._is_controlled: bool = False
         super().__init__()
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: object, /) -> bool:
         if not isinstance(other, Error):
-            return False
+            return NotImplemented
         return self._error == other.error
 
     @recursive_repr()
@@ -102,7 +111,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
             if isinstance(self._error, BaseException)
             else f"<Result: Error({self._error!r})>"
         )
-    
+
     def __bool__(self) -> typing.Literal[False]:
         return False
 
@@ -115,7 +124,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
 
     def unwrap_or(self, alternate_value: T, /) -> T:
         return alternate_value
-    
+
     def unwrap_or_none(self) -> None:
         return None
 
@@ -133,11 +142,16 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
 
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
         raise UnwrapError(error)
-    
-    def and_then(self, f: typing.Callable[..., Result[T, Err]]) -> Error[Err]:
+
+    def and_then(self, f: typing.Callable[..., Result[T, Err]], /) -> Error[Err]:
         return self
-    
-    def cast(self, ok: object = _default_ok, error: typing.Callable[[Err], T] = _default_error) -> T:
+
+    def cast(
+        self,
+        ok: object = _default_ok,
+        error: typing.Callable[[Err], T] = _default_error,
+        /,
+    ) -> T:
         return error(self._error)
 
 

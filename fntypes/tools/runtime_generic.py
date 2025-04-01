@@ -1,24 +1,28 @@
+import inspect
 import types
 import typing
-import inspect
-
 
 GENERIC_CLASS_ATTRS = set(dir(typing._GenericAlias))  # type: ignore
+
 
 class Proxy:
     def __init__(self, generic: typing.Any) -> None:
         self._generic = generic
 
     def __getattr__(self, __name: str) -> typing.Any:
-        if (typing._is_dunder(__name) or __name in GENERIC_CLASS_ATTRS): # type: ignore
+        if typing._is_dunder(__name) or __name in GENERIC_CLASS_ATTRS:  # type: ignore
             return getattr(self._generic, __name)
 
         origin = self._generic.__origin__
         obj = getattr(origin, __name)
 
-        if inspect.ismethod(obj) and hasattr(obj, '__self__') and isinstance(obj.__self__, type):
+        if (
+            inspect.ismethod(obj)
+            and hasattr(obj, "__self__")
+            and isinstance(obj.__self__, type)
+        ):
             return lambda *a, **kw: obj.__func__(self, *a, **kw)
-        
+
         return obj
 
     def __setattr__(self, name: str, value: typing.Any) -> None:
@@ -29,7 +33,7 @@ class Proxy:
 
     def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         return self._generic(*args, **kwargs)
-    
+
     def get_args(self) -> tuple[type[typing.Any], ...]:
         return typing.get_args(self._generic)
 
@@ -54,7 +58,7 @@ class RuntimeGeneric:
 
         if getattr(generic, "__origin__", None):
             return Proxy(generic)
-        
+
         return generic
 
 
