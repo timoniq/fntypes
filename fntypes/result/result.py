@@ -6,6 +6,9 @@ from reprlib import recursive_repr
 from fntypes.error import UnwrapError
 from fntypes.result.log_factory import ErrorLogFactoryMixin
 
+if typing.TYPE_CHECKING:
+    from fntypes import LazyCoroResult
+
 T = typing.TypeVar("T")
 Err = typing.TypeVar("Err", covariant=True)
 Value = typing.TypeVar("Value", covariant=True)
@@ -78,10 +81,13 @@ class Ok(typing.Generic[Value]):
     def expect(self, error: typing.Any, /) -> Value:
         return self._value
 
-    def and_then(
-        self, f: typing.Callable[[Value], Result[T, Err]], /
-    ) -> Result[T, Err]:
+    def then(self, f: typing.Callable[[Value], Result[T, Err]], /) -> Result[T, Err]:
         return f(self._value)
+
+    def to_async(self) -> LazyCoroResult[Value, typing.Any]:
+        from fntypes import LazyCoroResult, LazyCoro
+
+        return LazyCoroResult(LazyCoro.pure(self))
 
 
 class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
@@ -143,7 +149,7 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
         raise UnwrapError(error)
 
-    def and_then(self, f: typing.Callable[..., Result[T, Err]], /) -> Error[Err]:
+    def then(self, f: typing.Callable[..., Result[T, Err]], /) -> Error[Err]:
         return self
 
     def cast(
@@ -153,6 +159,11 @@ class Error(typing.Generic[Err], ErrorLogFactoryMixin[Err]):
         /,
     ) -> T:
         return error(self._error)
+
+    def to_async(self) -> LazyCoroResult[typing.Any, Err]:
+        from fntypes import LazyCoroResult, LazyCoro
+
+        return LazyCoroResult(LazyCoro.pure(self))
 
 
 Result: typing.TypeAlias = Ok[Value] | Error[Err]

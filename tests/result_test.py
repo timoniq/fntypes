@@ -22,7 +22,7 @@ def test_result_ok() -> None:
     assert result.map(lambda v: 22 / v) == Ok(22)
     assert result.map_or(10, lambda v: v + v) == Ok(2)
     assert result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == Ok(1)
-    assert result.and_then(inc_number).unwrap() == 2
+    assert result.then(inc_number).unwrap() == 2
     assert repr(result) == "<Result: Ok(1)>"
     assert result.expect("Should not happen") == 1
     assert isinstance(result.cast(Some, Nothing), Some)
@@ -44,7 +44,7 @@ def test_result_err():
     assert result.map(lambda _: 2) == result
     assert result.map_or(5, lambda _: 6) == Ok(5)
     assert result.map_or_else(lambda e: len(e.args[0]), lambda v: v) == Ok(2)
-    assert result.and_then(inc_number).error.args[0] == "Oh"
+    assert result.then(inc_number).error.args[0] == "Oh"
     assert repr(result) == "<Result: Error(TypeError: 'Oh')>"
 
     with pytest.raises(ValueError):
@@ -67,14 +67,14 @@ def test_nothing() -> None:
 
     assert repr(nothing) == "Nothing()"
     assert nothing.map(lambda _: object()) == nothing
-    assert nothing.and_then(lambda x: Some(123)) == nothing
+    assert nothing.then(lambda x: Some(123)) == nothing
 
 
 def test_some() -> None:
     option = Some(1)
     assert repr(option) == "Some(1)"
     assert option.map(lambda x: x + 1) == Some(2)
-    assert option.and_then(lambda x: Nothing()) == Nothing()
+    assert option.then(lambda x: Nothing()) == Nothing()
 
 
 def test_log_factory() -> None:

@@ -2,7 +2,7 @@
 
 Unwrapping is a way to manage control flow designed with fntypes monads in a more convenient manner.
 
-In theory, unwrapping is needed to create a syntaxic sugar that functions like `bind` method that defines a monad. In fntypes `bind` is known as `.and_then`. What it does, is it creates a binding between two functions returning a result of the same error type or option. If the current monad is in the state of error, the error is returned, if not, the value is passed into the function that is an argument in `and_then`. Let's look to the following example:
+In theory, unwrapping is needed to create a syntaxic sugar that functions like `bind` method that defines a monad. In fntypes `bind` is known as `.then`. What it does, is it creates a binding between two functions returning a result of the same error type or option. If the current monad is in the state of error, the error is returned, if not, the value is passed into the function that is an argument in `then`. Let's look to the following example:
 
 ```python
 def func1(a: int) -> Result[str, str]:
@@ -21,17 +21,17 @@ def func3(b: str) -> Result[int, str]:
 
 x: Result[int, str] = Ok(11)
 
-x.and_then(func1) # "11"
-x.and_then(func2) # Type checker: wrong error type
-x.and_then(func1).and_then(func3) # 11
+x.then(func1) # "11"
+x.then(func2) # Type checker: wrong error type
+x.then(func1).then(func3) # 11
 
 y: Result[int, str] = Error("Some error")
 
-y.and_then(func1) # Error("Some error")
-y.and_then(func1).and_then(func3) # Error("Some error")
+y.then(func1) # Error("Some error")
+y.then(func1).then(func3) # Error("Some error")
 ```
 
-Now, after we have understanding what `and_then` (or `bind`) is needed for, we can also comprehend the idea of a syntaxic sugar to apply this idea in a single scope, with no need to create multiple functions.
+Now, after we have understanding what `then` (or `bind`) is needed for, we can also comprehend the idea of a syntaxic sugar to apply this idea in a single scope, with no need to create multiple functions.
 
 The only thing we should bear in mind is that the error type must be always same. For `Option` error type is None. If we need to change error type, we can use `expect` function.
 
