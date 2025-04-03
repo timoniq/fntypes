@@ -27,6 +27,6 @@ def test_either() -> None:
         either(
             Error("oops"),
             lambda: Error("shmoops"),
-        ).error
+        ).unwrap_err()
         == "shmoops"
     )

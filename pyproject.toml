@@ -1,20 +1,91 @@
 [tool.poetry]
 name = "fntypes"
-version = "0.1.4.post3"
+version = "0.2.0"
 description = ""
 authors = ["timoniq"]
 readme = "readme.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-typing-extensions = "^4.13.0"
+typing-extensions = "^4.13.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
-pytest-asyncio = "^0.23.5"
+pytest-asyncio = "^0.26.0"
+ruff = ">=0.11.2,<0.12"
+pyright = "^1.1.398"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 150
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+select = [
+  "I",
+  "D",
+  "N",
+  "PLR",
+  "Q",
+  "COM",
+  "TC",
+  "YTT",
+  "SIM"
+]
+ignore = [
+  "COM812",
+  "N805",
+  "N818",
+  "TC001",
+  "TC002",
+  "TC003",
+  "TC004",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D107",
+  "D202",
+  "D203",
+  "D205",
+  "D209",
+  "D211",
+  "D213",
+  "D400",
+  "D401",
+  "D404",
+  "D415",
+  "PLR2004",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913"
+]
+fixable = ["ALL"]
+exclude = [".venv", ".idea"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+
+[tool.pyright]
+exclude = [
+  ".venv",
+  ".idea",
+  ".ruff_cache",
+  ".pytest_cache",
+]
+typeCheckingMode = "basic"
+pythonPlatform = "All"
+pythonVersion = "3.12"
+reportMissingImports = true
+reportMissingTypeStubs = false
 
 [build-system]
 requires = ["poetry-core"]

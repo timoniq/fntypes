@@ -5,8 +5,7 @@ from reprlib import recursive_repr
 
 from fntypes.result import Error, Ok
 
-T = typing.TypeVar("T")
-Value = typing.TypeVar("Value", covariant=True)
+type Option[T] = Some[T] | Nothing
 
 
 class Nothing(Error[None]):
@@ -24,7 +23,7 @@ class Nothing(Error[None]):
         return Nothing()
 
 
-class Some(typing.Generic[Value], Ok[Value]):
+class Some[Value](Ok[Value]):
     @recursive_repr()
     def __repr__(self) -> str:
         return f"Some({self._value!r})"
@@ -32,14 +31,11 @@ class Some(typing.Generic[Value], Ok[Value]):
     def __del__(self) -> None:
         pass
 
-    def map(self, op: typing.Callable[[Value], T], /) -> Some[T]:
+    def map[T](self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self._value))
 
-    def then(self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:
+    def then[T](self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:
         return f(self._value)
-
-
-Option: typing.TypeAlias = Some[Value] | Nothing
 
 
 __all__ = ("Nothing", "Some", "Option")

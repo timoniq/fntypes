@@ -1,7 +1,7 @@
-from fntypes.tools import cache, acache
+from fntypes.tools import acache, cache
 
 
-def test_cache():
+def test_cache() -> None:
     times_called = 0
 
     @cache
@@ -16,7 +16,7 @@ def test_cache():
     assert times_called == 1
 
 
-async def test_acache():
+async def test_acache() -> None:
     times_called = 0
 
     @acache
