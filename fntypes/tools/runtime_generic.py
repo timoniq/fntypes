@@ -16,11 +16,7 @@ class Proxy:
         origin = self._generic.__origin__
         obj = getattr(origin, __name)
 
-        if (
-            inspect.ismethod(obj)
-            and hasattr(obj, "__self__")
-            and isinstance(obj.__self__, type)
-        ):
+        if inspect.ismethod(obj) and hasattr(obj, "__self__") and isinstance(obj.__self__, type):
             return lambda *a, **kw: obj.__func__(self, *a, **kw)
 
         return obj
@@ -50,8 +46,8 @@ class Proxy:
 
 
 class RuntimeGeneric:
-    def __class_getitem__(cls, key: typing.Any) -> Proxy | typing.Any:
-        generic = super().__class_getitem__(key)  # type: ignore
+    def __class_getitem__(cls, key: typing.Any) -> typing.Any:
+        generic: typing.Any = super().__class_getitem__(key)  # type: ignore
 
         if any(typing.get_origin(arg) is not None for arg in typing.get_args(generic)):
             raise TypeError("Parametrized types are not supported.")

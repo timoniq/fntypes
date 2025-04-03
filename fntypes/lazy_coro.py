@@ -5,31 +5,31 @@ import typing
 from fntypes.lazy import Lazy
 from fntypes.tools import acache
 
-T = typing.TypeVar("T")
-Value = typing.TypeVar("Value", covariant=True)
 
+class LazyCoro[Value]:
+    __slots__ = ("_value",)
 
-class LazyCoro(typing.Generic[Value]):
     def __init__(
         self,
         value: typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, Value]],
+        /,
     ) -> None:
         self._value = value
 
     @staticmethod
-    def pure(value: T) -> LazyCoro[T]:
+    def pure[T](value: T) -> LazyCoro[T]:
         async def wrapper() -> T:
             return value
 
         return LazyCoro(wrapper)
 
-    def map(self, op: typing.Callable[[Value], T], /) -> LazyCoro[T]:
+    def map[T](self, op: typing.Callable[[Value], T], /) -> LazyCoro[T]:
         async def wrapper() -> T:
             return op(await self())
 
         return LazyCoro(wrapper)
 
-    def then(self, f: typing.Callable[[Value], typing.Awaitable[T]]) -> LazyCoro[T]:
+    def then[T](self, f: typing.Callable[[Value], typing.Awaitable[T]]) -> LazyCoro[T]:
         async def wrapper() -> T:
             return await f(await self())
 
