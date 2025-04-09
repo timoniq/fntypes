@@ -4,6 +4,7 @@ from fntypes.error import UnwrapError
 from fntypes.option import Nothing, Some
 from fntypes.result import Error, Ok, Result
 from fntypes.result.log_factory import RESULT_ERROR_LOGGER
+from fntypes.misc import is_ok, is_err
 
 
 def inc_number(n: int) -> Result[int, TypeError]:
@@ -18,6 +19,9 @@ def test_result_ok() -> None:
     assert result.unwrap_or(2) == 1
     assert result.unwrap_or_none() == 1
     assert result.unwrap_or_other(Error(None)) == 1
+
+    assert is_ok(result)
+    assert not is_err(result)
 
     assert result.map(lambda v: 22 / v) == Ok(22)
     assert result.map_or(10, lambda v: v + v) == Ok(2)
@@ -38,6 +42,10 @@ def test_result_err():
 
     assert result.unwrap_or(1) == 1
     assert not result
+
+    assert not is_ok(result)
+    assert is_err(result)
+    
     assert result != Ok(1)
     assert result.unwrap_or_none() is None
     assert result.unwrap_or_other(Ok(10)) == 10

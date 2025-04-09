@@ -1,7 +1,7 @@
 from .lazy import Lazy
 from .lazy_coro import LazyCoro
 from .lazy_coro_result import LazyCoroResult
-from .misc import either, this
+from .misc import either, this, is_ok, is_err, is_some, is_nothing
 from .option import Nothing, Option, Some
 from .result import Error, Ok, Result, Wrapped
 from .tools import unwrapping
@@ -22,4 +22,8 @@ __all__ = (
     "Lazy",
     "LazyCoro",
     "LazyCoroResult",
+    "is_ok",
+    "is_err",
+    "is_some",
+    "is_nothing",
 )
