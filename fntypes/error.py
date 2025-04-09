@@ -16,11 +16,7 @@ NOERROR: typing.Final[typing.Literal[NoError.NOERROR]] = NoError.NOERROR
 
 
 def _is_exception(obj: typing.Any, /) -> bool:
-    return (
-        isinstance(obj, BaseException)
-        or isinstance(obj, type)
-        and issubclass(obj, BaseException)
-    )
+    return isinstance(obj, BaseException) or isinstance(obj, type) and issubclass(obj, BaseException)
 
 
 class _ErrorDescriptor(typing.Generic[T]):
@@ -61,11 +57,7 @@ class UnwrapError(typing.Generic[T], BaseException):
 
         def __new__(cls, error=NOERROR, /):
             if _is_exception(error):
-                err_args, err_class = (
-                    (error.args, type(error))
-                    if not isinstance(error, type)
-                    else ((), error)
-                )
+                err_args, err_class = (error.args, type(error)) if not isinstance(error, type) else ((), error)
                 return type(
                     err_class.__name__,
                     (cls, err_class),
@@ -79,16 +71,10 @@ class UnwrapError(typing.Generic[T], BaseException):
 
         def __init__(self, error=NOERROR, /, *args):
             other_args = (
-                ()
-                if error is NOERROR or _is_exception(error) and isinstance(error, type)
-                else (error,)
-                if not isinstance(error, tuple)
-                else error
+                () if error is NOERROR or _is_exception(error) and isinstance(error, type) else (error,) if not isinstance(error, tuple) else error
             )
             super().__init__(
-                *other_args
-                if not _is_exception(error) or isinstance(error, type)
-                else error.args,
+                *other_args if not _is_exception(error) or isinstance(error, type) else error.args,
                 *args,
             )
             self.__error__ = () if error is NOERROR else error

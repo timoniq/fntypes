@@ -6,42 +6,42 @@ from fntypes.error import UnwrapError
 from fntypes.option import Option
 from fntypes.result import Error, Result
 
-ParamSpec = typing.ParamSpec("ParamSpec")
-T = typing.TypeVar("T")
-Err = typing.TypeVar("Err")
+type Coroutine[T] = typing.Coroutine[typing.Any, typing.Any, T]
 
 
 @typing.overload
-def unwrapping(
-    func: typing.Callable[ParamSpec, Option[T]],
-) -> typing.Callable[ParamSpec, Option[T]]: ...
+def unwrapping[**P, R](
+    func: typing.Callable[P, Option[R]],
+    /,
+) -> typing.Callable[P, Option[R]]: ...
 
 
 @typing.overload
-def unwrapping(
-    func: typing.Callable[ParamSpec, Result[T, Err]],
-) -> typing.Callable[ParamSpec, Result[T, Err]]: ...
+def unwrapping[**P, T, Err](
+    func: typing.Callable[P, Result[T, Err]],
+    /,
+) -> typing.Callable[P, Result[T, Err]]: ...
 
 
 @typing.overload
-def unwrapping(
-    func: typing.Callable[ParamSpec, typing.Awaitable[Option[T]]],
-) -> typing.Callable[ParamSpec, typing.Coroutine[object, object, Option[T]]]: ...
+def unwrapping[**P, R](
+    func: typing.Callable[P, typing.Awaitable[Option[R]]],
+    /,
+) -> typing.Callable[P, Coroutine[Option[R]]]: ...
 
 
 @typing.overload
-def unwrapping(
-    func: typing.Callable[ParamSpec, typing.Awaitable[Result[T, Err]]],
-) -> typing.Callable[ParamSpec, typing.Coroutine[object, object, Result[T, Err]]]: ...
+def unwrapping[**P, T, Err](
+    func: typing.Callable[P, typing.Awaitable[Result[T, Err]]],
+    /,
+) -> typing.Callable[P, Coroutine[Result[T, Err]]]: ...
 
 
-def unwrapping(
-    func: typing.Callable[ParamSpec, T],
-) -> typing.Callable[ParamSpec, T]:
+def unwrapping[**P, R](func: typing.Callable[P, R], /) -> typing.Callable[P, R]:
     if asyncio.iscoroutinefunction(func):
 
         @wraps(func)
-        async def __call__(  # type: ignore
+        async def __call__(  # type: ignore  # noqa: N807
             *args: typing.Any,
             **kwargs: typing.Any,
         ):
@@ -52,7 +52,7 @@ def unwrapping(
     else:
 
         @wraps(func)
-        def __call__(  # type: ignore
+        def __call__(  # type: ignore  # noqa: N807
             *args: typing.Any,
             **kwargs: typing.Any,
         ):
