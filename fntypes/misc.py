@@ -1,4 +1,4 @@
-import typing
+import typing_extensions as typing
 
 from fntypes.result import Ok, Error, Result
 from fntypes.option import Some, Nothing, Option
@@ -18,19 +18,20 @@ def either[T, Err](result: Result[T, Err], or_: typing.Callable[[], Result[T, Er
 
 # Typeguards
 
-def is_ok[T, Err](result: Result[T, Err]) -> typing.TypeGuard[Ok[T]]:
+
+def is_ok[T](result: Result[T, typing.Any], /) -> typing.TypeIs[Ok[T]]:
     return isinstance(result, Ok)
 
 
-def is_err[T, Err](result: Result[T, Err]) -> typing.TypeGuard[Error[Err]]:
+def is_err[Err](result: Result[typing.Any, Err], /) -> typing.TypeIs[Error[Err]]:
     return isinstance(result, Error)
 
 
-def is_some[T](option: Option[T]) -> typing.TypeGuard[Some[T]]:
+def is_some[T](option: Option[T], /) -> typing.TypeIs[Some[T]]:
     return isinstance(option, Some)
 
 
-def is_nothing[T](option: Option[T]) -> typing.TypeGuard[Nothing]:
+def is_nothing(option: Option[typing.Any], /) -> typing.TypeIs[Nothing]:
     return isinstance(option, Nothing)
 
 
