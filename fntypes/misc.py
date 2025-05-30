@@ -1,7 +1,7 @@
 import typing_extensions as typing
 
-from fntypes.result import Ok, Error, Result
-from fntypes.option import Some, Nothing, Option
+from fntypes.option import Nothing, Option, Some
+from fntypes.result import Error, Ok, Result
 
 
 def this[T](obj: T, /) -> T:
@@ -14,6 +14,14 @@ def either[T, Err](result: Result[T, Err], or_: typing.Callable[[], Result[T, Er
             return result
         case _:
             return or_()
+
+
+def from_optional[Value](value: Value | None, /) -> Option[Value]:
+    return Some(value) if value is not None else Nothing()
+
+
+def to_optional[Value](option: Option[Value], /) -> Value | None:
+    return option.unwrap_or_none()
 
 
 # Typeguards
@@ -36,10 +44,12 @@ def is_nothing(option: Option[typing.Any], /) -> typing.TypeIs[Nothing]:
 
 
 __all__ = (
-    "this", 
+    "this",
     "either",
     "is_ok",
     "is_err",
     "is_some",
     "is_nothing",
+    "to_optional",
+    "from_optional",
 )

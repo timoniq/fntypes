@@ -58,7 +58,7 @@ class ErrorLogFactoryMixin[Error]:
             (which is considered passed as soon as .error field is accessed)
             then there is no need to log on event of result deletion."""
 
-            if name == "_error" and self._tb is not None:
+            if name == "_error" and super().__getattribute__("_tb") is not None:
                 self._is_controlled = True
 
             return super().__getattribute__(name)

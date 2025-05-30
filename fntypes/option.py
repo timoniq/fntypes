@@ -4,13 +4,24 @@ import typing
 from reprlib import recursive_repr
 
 from fntypes.result import Error, Ok
+from fntypes.tools.singleton import Singleton
 
 type Option[T] = Some[T] | Nothing
 
 
-class Nothing(Error[None]):
+class Nothing(Singleton, Error[None]):
+    @typing.overload
+    def __init__(self) -> None:
+        pass
+
+    @typing.overload
+    def __init__(self, *suppress_args: typing.Any) -> None:
+        pass
+
     def __init__(self, *_suppress_args: typing.Any) -> None:
-        super().__init__(None)
+        self._error = None
+        self._tb = None
+        self._is_controlled = False
 
     @recursive_repr()
     def __repr__(self) -> str:

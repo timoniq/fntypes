@@ -1,10 +1,10 @@
 import pytest
 
 from fntypes.error import UnwrapError
+from fntypes.misc import is_err, is_ok
 from fntypes.option import Nothing, Some
 from fntypes.result import Error, Ok, Result
 from fntypes.result.log_factory import RESULT_ERROR_LOGGER
-from fntypes.misc import is_ok, is_err
 
 
 def inc_number(n: int) -> Result[int, TypeError]:
@@ -45,7 +45,7 @@ def test_result_err():
 
     assert not is_ok(result)
     assert is_err(result)
-    
+
     assert result != Ok(1)
     assert result.unwrap_or_none() is None
     assert result.unwrap_or_other(Ok(10)) == 10
