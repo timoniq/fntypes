@@ -101,8 +101,8 @@ class Error[E](ErrorLogFactoryMixin[E]):
 
     def __init__(self, error: E, /) -> None:
         self._error = error
-        self._tb: str | None = None
-        self._is_controlled: bool = False
+        self._tb = None
+        self._is_controlled = False
         super().__init__()
 
     def __eq__(self, other: object, /) -> bool:
