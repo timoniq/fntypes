@@ -1,7 +1,29 @@
 from __future__ import annotations
 
-import traceback
+import linecache
+import sys
 import typing
+
+PREPEND_RESULT_LOG_MESSAGE: typing.Final[str] = "Result traceback log (error value is not controlled):\n\n"
+
+
+def base_traceback_formatter() -> str:
+    trace = []
+    frame = sys._getframe(4)
+    count = 0
+
+    while frame and count <= 15:
+        filename = frame.f_code.co_filename
+        lineno = frame.f_lineno
+        funcname = frame.f_code.co_name
+
+        line = linecache.getline(filename, lineno).strip()
+        trace.append(f'  File "{filename}", line {lineno}, in {funcname}\n    {line}\n')
+
+        frame = frame.f_back
+        count += 1
+
+    return "\n".join(trace[::-1])
 
 
 class ResultLoggingFactory:
@@ -11,34 +33,30 @@ class ResultLoggingFactory:
 
     def __init__(
         self,
-        log: typing.Callable[[str], None] = lambda _: None,
-        traceback_formatter: typing.Callable[[], str] | None = None,
+        log: typing.Callable[[str], None] | None = None,
+        traceback_formatter: typing.Callable[[], str] = base_traceback_formatter,
     ) -> None:
         self._log = log
-        self._traceback_formatter = traceback_formatter or self.base_traceback_formatter
+        self._traceback_formatter = traceback_formatter
 
     def __call__(self, err: typing.Any) -> None:
-        self._log(str(err))
+        if self._log is not None:
+            self._log(str(err))
 
-    @staticmethod
-    def base_traceback_formatter() -> str:
-        summary = traceback.extract_stack()
-        while len(summary) > 2:
-            if summary[-1].filename in (__file__, "<string>", "<module>"):
-                summary.pop()
-            else:
-                break
-        trace = traceback.format_list(summary)
-        return "\n".join(trace)
+    @property
+    def used(self) -> bool:
+        return self._log is not None
 
-    def format_traceback(self, error: typing.Any) -> str:
-        return self._traceback_formatter() + "\n\n  " + repr(error)
+    def format_traceback(self, error: typing.Any, /) -> str:
+        return self._traceback_formatter() + "\n\n" + repr(error)
 
-    def set_log(self, log: typing.Callable[[str], None]) -> None:
+    def set_log(self, log: typing.Callable[[str], None], /) -> typing.Self:
         self._log = log
+        return self
 
-    def set_traceback_formatter(self, formatter: typing.Callable[[], str]) -> None:
+    def set_traceback_formatter(self, formatter: typing.Callable[[], str], /) -> typing.Self:
         self._traceback_formatter = formatter
+        return self
 
 
 class ErrorLogFactoryMixin[Error]:
@@ -49,7 +67,12 @@ class ErrorLogFactoryMixin[Error]:
     __slots__ = ("_error", "_tb", "_is_controlled")
 
     def __init__(self) -> None:
-        self._tb = "Result log\n" + RESULT_ERROR_LOGGER.format_traceback(self.error)
+        self._tb = (
+            None
+            if not RESULT_ERROR_LOGGER.used
+            else PREPEND_RESULT_LOG_MESSAGE + RESULT_ERROR_LOGGER.format_traceback(self.error)
+        )
+        self._is_controlled = False
 
     if not typing.TYPE_CHECKING:
 
