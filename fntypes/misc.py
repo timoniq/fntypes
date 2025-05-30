@@ -20,10 +20,6 @@ def from_optional[Value](value: Value | None, /) -> Option[Value]:
     return Some(value) if value is not None else Nothing()
 
 
-def to_optional[Value](option: Option[Value], /) -> Value | None:
-    return option.unwrap_or_none()
-
-
 # Typeguards
 
 
@@ -50,6 +46,5 @@ __all__ = (
     "is_err",
     "is_some",
     "is_nothing",
-    "to_optional",
     "from_optional",
 )
