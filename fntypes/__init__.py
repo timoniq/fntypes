@@ -1,3 +1,4 @@
+from .f import F
 from .lazy import Lazy
 from .lazy_coro import LazyCoro
 from .lazy_coro_result import LazyCoroResult
@@ -8,6 +9,7 @@ from .tools import unwrapping
 from .variative import Variative
 
 __all__ = (
+    "F",
     "Option",
     "Nothing",
     "Some",

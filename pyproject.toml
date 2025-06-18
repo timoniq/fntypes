@@ -6,7 +6,7 @@ authors = ["timoniq"]
 readme = "readme.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.13"
 typing-extensions = "^4.13.2"
 
 [tool.poetry.group.dev.dependencies]
@@ -20,7 +20,7 @@ asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 150
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.format]
 quote-style = "double"
@@ -83,7 +83,7 @@ exclude = [
 ]
 typeCheckingMode = "basic"
 pythonPlatform = "All"
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 reportMissingImports = true
 reportMissingTypeStubs = false
 

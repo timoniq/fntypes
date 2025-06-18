@@ -67,11 +67,7 @@ class ErrorLogFactoryMixin[Error]:
     __slots__ = ("_error", "_tb", "_is_controlled")
 
     def __init__(self) -> None:
-        self._tb = (
-            None
-            if not RESULT_ERROR_LOGGER.used
-            else PREPEND_RESULT_LOG_MESSAGE + RESULT_ERROR_LOGGER.format_traceback(self.error)
-        )
+        self._tb = None if not RESULT_ERROR_LOGGER.used else PREPEND_RESULT_LOG_MESSAGE + RESULT_ERROR_LOGGER.format_traceback(self.error)
         self._is_controlled = False
 
     if not typing.TYPE_CHECKING:
