@@ -33,7 +33,7 @@ def test_unwrap_error() -> None:
     assert isinstance(error2.__error__, str)
 
     error3 = UnwrapError()
-    with pytest.raises(UnwrapError, match=""):
+    with pytest.raises(UnwrapError, match="^$"):
         raise error3
 
     assert error3.__error__ == ()
