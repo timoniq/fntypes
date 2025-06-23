@@ -4,7 +4,8 @@ import typing
 from reprlib import recursive_repr
 
 from fntypes.error import UnwrapError
-from fntypes.result.log_factory import ErrorLogFactoryMixin
+from fntypes.internal.custom_types import CastTransformer
+from fntypes.log_factory import ErrorLogFactoryMixin
 
 if typing.TYPE_CHECKING:
     from fntypes import LazyCoroResult
@@ -75,7 +76,7 @@ class Ok[Value]:
 
     def cast[T](
         self,
-        ok: typing.Callable[[Value], T] = _default_ok,
+        ok: typing.Callable[[Value], T] | Ok[Value] = _default_ok,
         error: object = _default_error,
         /,
     ) -> T:
@@ -164,7 +165,7 @@ class Error[E](ErrorLogFactoryMixin[E]):
     def cast[T](
         self,
         ok: object = _default_ok,
-        error: typing.Callable[[E], T] = _default_error,
+        error: CastTransformer[E, T] = _default_error,
         /,
     ) -> T:
         return error(self._error)

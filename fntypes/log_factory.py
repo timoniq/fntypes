@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+import collections.abc
 import linecache
 import sys
+from types import FrameType
 import typing
+
 
 PREPEND_RESULT_LOG_MESSAGE: typing.Final[str] = "Result traceback log (error value is not controlled):\n\n"
 
 
 def base_traceback_formatter() -> str:
     trace = []
-    frame = sys._getframe(4)
+    frame: FrameType | None = sys._getframe(4)
     count = 0
 
     while frame and count <= 15:

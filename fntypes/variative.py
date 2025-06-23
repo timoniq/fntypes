@@ -4,12 +4,13 @@ import typing
 from reprlib import recursive_repr
 
 from fntypes.result import Error, Ok, Result
+from fntypes.tools.fake_static_method import BindStaticMeta
 from fntypes.tools.runtime_generic import RuntimeGeneric
 
 HEAD = typing.NewType("HEAD", type)
 
 
-class Variative[*Ts](RuntimeGeneric):
+class Variative[*Ts](RuntimeGeneric, metaclass=BindStaticMeta):
     _value: typing.Any
 
     __slots__ = ("_value",)
@@ -42,21 +43,22 @@ class Variative[*Ts](RuntimeGeneric):
 
         return self._value
 
-    @typing.overload
-    def get_args(self) -> tuple[*Ts]:  # type: ignore
-        ...
-
-    @typing.overload
-    @classmethod
-    def get_args(cls) -> tuple[*Ts]: ...
-
-    def get_args(self) -> tuple[*Ts]:  # type: ignore
+    @staticmethod
+    def get_args(_: typing.Any = None) -> tuple[*Ts]:
         """>>> Variative[str, int].get_args()
         >>> (str, int)
         >>> Variative[str, int]("Hello!").get_args()
         >>> (str, int)
-        """
 
+        Just view for ide support. Real signatures below
+        """
+        raise NotImplemented
+
+    @classmethod
+    def get_args_cls(cls) -> tuple[*Ts]:
+        return typing.get_args(getattr(cls, "__orig_class__", cls.__class__))
+
+    def get_args_self(self) -> tuple[*Ts]:
         return typing.get_args(getattr(self, "__orig_class__", self.__class__))
 
     @typing.overload
@@ -114,6 +116,11 @@ class Variative[*Ts](RuntimeGeneric):
         v(1).detach() #> Ok(Variative[int](1))
         ```
         """
+
+        total_args = self.get_args()
+        if len(total_args) < 1:
+            type_names = ", ".join(arg.__name__ if isinstance(arg, type) else repr(arg) for arg in total_args)
+            raise TypeError(f"Cannot detach head from Variative[{type_names}]: at least two types required")
 
         head, *tail = self.get_args()
         if isinstance(self._value, head) and not isinstance(self._value, tuple(tail)):  # type: ignore

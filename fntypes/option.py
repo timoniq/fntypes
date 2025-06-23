@@ -3,8 +3,8 @@ from __future__ import annotations
 import typing
 from reprlib import recursive_repr
 
+from fntypes.internal.singleton import Singleton
 from fntypes.result import Error, Ok
-from fntypes.tools.singleton import Singleton
 
 type Option[T] = Some[T] | Nothing
 

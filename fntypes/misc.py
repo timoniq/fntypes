@@ -39,6 +39,10 @@ def is_nothing(option: Option[typing.Any], /) -> typing.TypeIs[Nothing]:
     return isinstance(option, Nothing)
 
 
+def is_dunder(attr: str) -> bool:
+    return attr.startswith("__") and attr.endswith("__")
+
+
 __all__ = (
     "this",
     "either",

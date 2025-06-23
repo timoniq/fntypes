@@ -2,7 +2,9 @@ import inspect
 import types
 import typing
 
-GENERIC_CLASS_ATTRS = set(dir(typing._GenericAlias))  # type: ignore
+from fntypes.misc import is_dunder
+
+GENERIC_CLASS_ATTRS = set(dir(types.GenericAlias))
 
 
 class Proxy:
@@ -10,14 +12,17 @@ class Proxy:
         self._generic = generic
 
     def __getattr__(self, __name: str) -> typing.Any:
-        if typing._is_dunder(__name) or __name in GENERIC_CLASS_ATTRS:  # type: ignore
+        if is_dunder(__name) or __name in GENERIC_CLASS_ATTRS:
             return getattr(self._generic, __name)
 
         origin = self._generic.__origin__
         obj = getattr(origin, __name)
 
         if inspect.ismethod(obj) and hasattr(obj, "__self__") and isinstance(obj.__self__, type):
-            return lambda *a, **kw: obj.__func__(self, *a, **kw)
+            def method_adapter(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+                return obj.__func__(self, *args, **kwargs)
+
+            return method_adapter
 
         return obj
 
@@ -37,8 +42,9 @@ class Proxy:
         return f"<{self.__class__.__name__} of {self._generic!r}>"
 
     @property
+    @typing.no_type_check
     def __class__(self) -> type[types.GenericAlias]:
-        return typing._GenericAlias  # type: ignore
+        return types.GenericAlias
 
     @property
     def __args__(self) -> tuple[type[typing.Any], ...]:
@@ -47,7 +53,13 @@ class Proxy:
 
 class RuntimeGeneric:
     def __class_getitem__(cls, key: typing.Any) -> typing.Any:
-        generic: typing.Any = super().__class_getitem__(key)  # type: ignore
+        ancestor = super(RuntimeGeneric, cls)
+
+        get_item_method = getattr(ancestor, "__class_getitem__", None)
+        if get_item_method is None:
+            raise TypeError(f"Type '{cls.__name__}' is not subscriptable and it has no __class_getitem__ method") from None
+
+        generic = get_item_method(key)
 
         if any(typing.get_origin(arg) is not None for arg in typing.get_args(generic)):
             raise TypeError("Parametrized types are not supported.")
