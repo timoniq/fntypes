@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import collections.abc
 import typing
+from typing import Never, assert_never
 
+from fntypes.internal.custom_types import CastTransformer
 from fntypes.lazy_coro import LazyCoro
 from fntypes.result import Error, Ok, Result
 from fntypes.tools import acache
@@ -38,11 +41,14 @@ class LazyCoroResult[Value, Err]:
 
     def unwrap_or[T](self, alternate_value: typing.Callable[[], typing.Awaitable[T]], /) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
-            match await self():
+            to_match = await self()
+            match to_match:
                 case Ok(value):
                     return value
                 case Error(_):
                     return await alternate_value()
+                case _:
+                    assert_never(to_match)
 
         return LazyCoro(wrapper)
 
@@ -54,11 +60,14 @@ class LazyCoroResult[Value, Err]:
 
     def unwrap_or_other[T](self, other: typing.Callable[[], typing.Awaitable[Result[T, Err]]], /) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
-            match await self():
+            to_match = await self()
+            match to_match:
                 case Ok(value):
                     return value
                 case Error(_):
                     return (await other()).unwrap()
+                case _:
+                    assert_never(to_match)
 
         return LazyCoro(wrapper)
 
@@ -81,11 +90,14 @@ class LazyCoroResult[Value, Err]:
         /,
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
-            match await self():
+            to_match = await self()
+            match to_match:
                 case Ok(value):
                     return Ok(f(value))
                 case Error(_):
                     return Ok(await default_value())
+                case _:
+                    assert_never(to_match)
 
         return LazyCoroResult(wrapper)
 
@@ -102,8 +114,8 @@ class LazyCoroResult[Value, Err]:
 
     def cast[T, F](
         self,
-        ok: typing.Callable[[Value], T] = Ok,
-        error: typing.Callable[[Err], F] = Error,
+        ok: CastTransformer[Value, T] = Ok,
+        error: CastTransformer[Err, F] = Error[Err],
         /,
     ) -> LazyCoro[T | F]:
         async def wrapper() -> T | F:
@@ -117,13 +129,16 @@ class LazyCoroResult[Value, Err]:
 
         return LazyCoro(wrapper)
 
-    def then[T](self, f: typing.Callable[[Value], typing.Awaitable[Result[T, Err]]], /) -> LazyCoroResult[T, Err]:
+    def then[T](self, f: typing.Callable[[Value], collections.abc.Awaitable[Result[T, Err]]], /) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
-            match await self():
+            to_match = await self()
+            match to_match:
                 case Ok(value):
                     return await f(value)
                 case Error(err):
                     return Error(err)
+                case _:
+                    assert_never(to_match)
 
         return LazyCoroResult(wrapper)
 

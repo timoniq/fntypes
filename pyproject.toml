@@ -1,19 +1,23 @@
-[tool.poetry]
+[project]
 name = "fntypes"
 version = "0.2.1"
 description = ""
-authors = ["timoniq"]
+authors = [{ name = "timoniq" }]
+requires-python = "~=3.13"
 readme = "readme.md"
+dependencies = ["typing-extensions>=4.13.2,<5"]
 
-[tool.poetry.dependencies]
-python = "^3.13"
-typing-extensions = "^4.13.2"
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5,<9",
+    "pytest-asyncio>=1.0.0,<2",
+    "ruff>=0.11.12,<0.12",
+    "pyright>=1.1.401,<2",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.5"
-pytest-asyncio = "^1.0.0"
-ruff = ">=0.11.12,<0.12"
-pyright = "^1.1.401"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -74,19 +78,20 @@ exclude = [".venv", ".idea"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F403"]
 
-[tool.pyright]
+[tool.basedpyright]
 exclude = [
   ".venv",
   ".idea",
   ".ruff_cache",
   ".pytest_cache",
+  "tests",
+  "examples"
 ]
-typeCheckingMode = "basic"
+typeCheckingMode = "strict"
 pythonPlatform = "All"
 pythonVersion = "3.13"
 reportMissingImports = true
 reportMissingTypeStubs = false
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+reportUnannotatedClassAttribute = false
+reportAny = false
+reportUnusedCallResult = false

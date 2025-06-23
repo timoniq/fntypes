@@ -1,5 +1,6 @@
 import functools
 import typing
+import collections.abc
 
 from fntypes.option import Nothing, Option, Some
 
@@ -23,8 +24,8 @@ def cache[T](func: typing.Callable[[], T]) -> typing.Callable[[], T]:
 
 
 def acache[T](
-    func: typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, T]],
-) -> typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, T]]:
+    func: typing.Callable[[], collections.abc.Coroutine[typing.Any, typing.Any, T]],
+) -> typing.Callable[[], collections.abc.Coroutine[typing.Any, typing.Any, T]]:
     cached: Option[T] = Nothing()
 
     @functools.wraps(func)
@@ -40,6 +41,3 @@ def acache[T](
         return result
 
     return wrapper
-
-
-__all__ = ("cache", "acache")

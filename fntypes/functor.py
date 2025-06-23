@@ -13,8 +13,8 @@ def identity[T](x: T, /) -> T:
     return x
 
 
-class F[R, **P = [R]]:
-    f: typing.Final[Callable[P, R]]
+class F[R, **P]:
+    f: Callable[P, R]
 
     @typing.overload
     def __init__[T](self: F[T, [T]], /) -> None: ...
@@ -30,40 +30,35 @@ class F[R, **P = [R]]:
 
     def then[T](self, g: Callable[[R], T], /) -> F[T, P]:
         return F(lambda *args, **kwargs: g(self.f(*args, **kwargs)))
-    
+
     def must_be(
-        self, 
+        self,
         chk: Callable[[R], bool],
         error: Callable[[R], BaseException] | BaseException | str | None = None,
     ) -> F[R, P]:
-        
         if error is None:
             error = lambda _: UnwrapError()
-        
+
         elif isinstance(error, str):
             error = lambda _: UnwrapError(error)
 
         elif isinstance(error, BaseException):
             e = error
             error = lambda _: e
-            
+
         def check(*args: P.args, **kwargs: P.kwargs) -> R:
             result = self.f(*args, **kwargs)
             if not chk(result):
                 raise error(result)
             return result
-        
+
         return F(check)
-    
+
     def expect[T, Err](
         self: "F[Result[T, Err], P]",
         error: Callable[[Result[T, Err]], BaseException] | BaseException | str | None = None,
     ) -> "F[T, P]":
-        return (
-            self
-            .must_be(lambda result: is_ok(result), error=error)
-            .then(lambda result: result.unwrap())
-        )
+        return self.must_be(lambda result: is_ok(result), error=error).then(lambda result: result.unwrap())
 
 
 __all__ = ("F",)

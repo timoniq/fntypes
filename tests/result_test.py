@@ -4,7 +4,7 @@ from fntypes.error import UnwrapError
 from fntypes.misc import is_err, is_ok
 from fntypes.option import Nothing, Some
 from fntypes.result import Error, Ok, Result
-from fntypes.result.log_factory import RESULT_ERROR_LOGGER
+from fntypes.log_factory import RESULT_ERROR_LOGGER
 
 
 def inc_number(n: int) -> Result[int, TypeError]:
