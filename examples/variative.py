@@ -1,4 +1,4 @@
-from fntypes import Variative
+from fntypes.variative import Variative
 
 u = Variative[int, str, float](1)
 
@@ -38,3 +38,7 @@ print(u.only(Animal).unwrap())  # instance of Cat (Cat is derived from Animal, s
 print(
     u.detach().unwrap()
 )  # Variative[Dog, Animal](instance of Cat) (Variative contains Cat, if we detach Cat from it its ok! because Cat is still an Animal which is not detachd)
+
+print(u[Cat])  # Result[Cat, str]
+print(u[Cat].unwrap_or_none())  # Cat()
+print(u[Dog].unwrap_or_none()) # None

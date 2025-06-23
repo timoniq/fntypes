@@ -72,6 +72,9 @@ class Variative[*Ts](RuntimeGeneric):
         # Will be in use when typing for the first overload will be improved
         ...
 
+    def __getitem__[T](self, t: type[T]) -> Result[T, str]:
+        return self.only(t)
+
     def only[T, P](  # type: ignore
         self: Variative[T, *tuple[P, ...]],
         t: type[T] = HEAD,
