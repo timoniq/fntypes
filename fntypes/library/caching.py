@@ -1,6 +1,6 @@
+import collections.abc
 import functools
 import typing
-import collections.abc
 
 from fntypes.library.monad.option import Nothing, Option, Some
 

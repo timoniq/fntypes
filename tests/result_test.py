@@ -1,10 +1,10 @@
 import pytest
 
-from fntypes.error import UnwrapError
-from fntypes.misc import is_err, is_ok
-from fntypes.option import Nothing, Some
-from fntypes.result import Error, Ok, Result
-from fntypes.log_factory import RESULT_ERROR_LOGGER
+from fntypes.library.error import UnwrapError
+from fntypes.library.misc import is_err, is_ok
+from fntypes.library.monad.option import Nothing, Some
+from fntypes.library.monad.result import Error, Ok, Result
+from fntypes.utilities.log_factory import RESULT_ERROR_LOGGER
 
 
 def inc_number(n: int) -> Result[int, TypeError]:

@@ -4,10 +4,10 @@ import collections.abc
 import typing
 from typing import assert_never
 
-from fntypes.utilities.misc import Caster
+from fntypes.library.caching import acache
 from fntypes.library.lazy.lazy_coro import LazyCoro
 from fntypes.library.monad.result import Error, Ok, Result
-from fntypes.library.caching import acache
+from fntypes.utilities.misc import Caster
 
 
 class LazyCoroResult[Value, Err]:

@@ -1,7 +1,6 @@
 from fntypes.library import *
 from fntypes.utilities.log_factory import RESULT_ERROR_LOGGER
 
-
 __all__ = (
     "cache",
     "acache",

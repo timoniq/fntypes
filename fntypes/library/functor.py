@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+import typing
 from collections.abc import Callable
 
-import typing
-
 from fntypes.library.error import UnwrapError
-from fntypes.library.monad.result import Result
 from fntypes.library.misc import is_ok
+from fntypes.library.monad.result import Result
 
 
 def identity[T](x: T, /) -> T:

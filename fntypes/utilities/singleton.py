@@ -1,6 +1,5 @@
 import typing
 
-
 type _SingletonInstance = typing.Any
 
 

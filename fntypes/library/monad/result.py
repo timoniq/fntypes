@@ -4,8 +4,8 @@ import typing
 from reprlib import recursive_repr
 
 from fntypes.library.error import UnwrapError
-from fntypes.utilities.misc import Caster
 from fntypes.utilities.log_factory import ErrorLogFactoryMixin
+from fntypes.utilities.misc import Caster
 
 if typing.TYPE_CHECKING:
     from fntypes.library.lazy.lazy_coro_result import LazyCoroResult

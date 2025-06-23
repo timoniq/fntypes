@@ -1,29 +1,29 @@
 from __future__ import annotations
 
 import linecache
-import sys
-from types import FrameType
 import typing
 
+from fntypes.utilities.misc import get_frame
 
 PREPEND_RESULT_LOG_MESSAGE: typing.Final[str] = "Result traceback log (error value is not controlled):\n\n"
+MAX_STACK_DEPTH: typing.Final[int] = 15
 
 
 def base_traceback_formatter() -> str:
-    trace = []
-    frame: FrameType | None = sys._getframe(4)
-    count = 0
+    depth = 0
+    trace = list[str]()
+    frame = get_frame(depth=3)
 
-    while frame and count <= 15:
+    while frame and depth <= MAX_STACK_DEPTH:
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
         funcname = frame.f_code.co_name
 
-        line = linecache.getline(filename, lineno).strip()
+        line = linecache.getline(filename, lineno, module_globals=frame.f_globals).strip()
         trace.append(f'  File "{filename}", line {lineno}, in {funcname}\n    {line}\n')
 
         frame = frame.f_back
-        count += 1
+        depth += 1
 
     return "\n".join(trace[::-1])
 
@@ -72,17 +72,16 @@ class ErrorLogFactoryMixin[Error]:
         self._tb = None if not RESULT_ERROR_LOGGER.used else PREPEND_RESULT_LOG_MESSAGE + RESULT_ERROR_LOGGER.format_traceback(self.error)
         self._is_controlled = False
 
-    if not typing.TYPE_CHECKING:
+    @typing.no_type_check
+    def __getattribute__(self, name: str, /) -> typing.Any:
+        """If control over `.error` was passed to another logic
+        (which is considered passed as soon as .error field is accessed)
+        then there is no need to log on event of result deletion."""
 
-        def __getattribute__(self, name, /):
-            """If control over `.error` was passed to another logic
-            (which is considered passed as soon as .error field is accessed)
-            then there is no need to log on event of result deletion."""
+        if name == "_error" and super().__getattribute__("_tb") is not None:
+            self._is_controlled = True
 
-            if name == "_error" and super().__getattribute__("_tb") is not None:
-                self._is_controlled = True
-
-            return super().__getattribute__(name)
+        return super().__getattribute__(name)
 
     def __del__(self) -> None:
         if self._tb and not self._is_controlled:

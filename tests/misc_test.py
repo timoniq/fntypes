@@ -1,5 +1,5 @@
-from fntypes.misc import either, this
-from fntypes.result import Error, Ok
+from fntypes.library.misc import either, this
+from fntypes.library.monad.result import Error, Ok
 
 
 def test_this() -> None:
