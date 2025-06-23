@@ -3,9 +3,9 @@ from __future__ import annotations
 import typing
 from reprlib import recursive_repr
 
-from fntypes.result import Error, Ok, Result
-from fntypes.tools.fake_static_method import BindStaticMeta
-from fntypes.tools.runtime_generic import RuntimeGeneric
+from fntypes.library.monad.result import Error, Ok, Result
+from fntypes.utilities.misc import BindStaticMeta
+from fntypes.utilities.runtime_generic import RuntimeGeneric
 
 HEAD = typing.NewType("HEAD", type)
 

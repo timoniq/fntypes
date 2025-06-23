@@ -2,7 +2,7 @@ import inspect
 import types
 import typing
 
-from fntypes.misc import is_dunder
+from fntypes.utilities.misc import is_dunder
 
 GENERIC_CLASS_ATTRS = set(dir(types.GenericAlias))
 

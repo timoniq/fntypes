@@ -4,17 +4,17 @@ from collections.abc import Callable
 
 import typing
 
-from fntypes.error import UnwrapError
-from fntypes.result import Result
-from fntypes.misc import is_ok
+from fntypes.library.error import UnwrapError
+from fntypes.library.monad.result import Result
+from fntypes.library.misc import is_ok
 
 
 def identity[T](x: T, /) -> T:
     return x
 
 
-class F[R, **P]:
-    f: Callable[P, R]
+class F[R, **P = [R]]:
+    f: typing.Final[Callable[P, R]]
 
     @typing.overload
     def __init__[T](self: F[T, [T]], /) -> None: ...

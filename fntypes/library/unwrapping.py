@@ -2,9 +2,9 @@ import asyncio
 import typing
 from functools import wraps
 
-from fntypes.error import UnwrapError
-from fntypes.option import Option
-from fntypes.result import Error, Result
+from fntypes.library.error import UnwrapError
+from fntypes.library.monad.option import Option
+from fntypes.library.monad.result import Error, Result
 
 type Coroutine[T] = typing.Coroutine[typing.Any, typing.Any, T]
 

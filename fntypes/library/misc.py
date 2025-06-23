@@ -1,7 +1,7 @@
 import typing_extensions as typing
 
-from fntypes.option import Nothing, Option, Some
-from fntypes.result import Error, Ok, Result
+from fntypes.library.monad.option import Nothing, Option, Some
+from fntypes.library.monad.result import Error, Ok, Result
 
 
 def this[T](obj: T, /) -> T:
@@ -37,10 +37,6 @@ def is_some[T](option: Option[T], /) -> typing.TypeIs[Some[T]]:
 
 def is_nothing(option: Option[typing.Any], /) -> typing.TypeIs[Nothing]:
     return isinstance(option, Nothing)
-
-
-def is_dunder(attr: str) -> bool:
-    return attr.startswith("__") and attr.endswith("__")
 
 
 __all__ = (

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections.abc
 import linecache
 import sys
 from types import FrameType

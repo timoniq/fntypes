@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import collections.abc
 import typing
-from typing import Never, assert_never
+from typing import assert_never
 
-from fntypes.internal.custom_types import CastTransformer
-from fntypes.lazy_coro import LazyCoro
-from fntypes.result import Error, Ok, Result
-from fntypes.tools import acache
+from fntypes.utilities.misc import Caster
+from fntypes.library.lazy.lazy_coro import LazyCoro
+from fntypes.library.monad.result import Error, Ok, Result
+from fntypes.library.caching import acache
 
 
 class LazyCoroResult[Value, Err]:
@@ -114,8 +114,8 @@ class LazyCoroResult[Value, Err]:
 
     def cast[T, F](
         self,
-        ok: CastTransformer[Value, T] = Ok,
-        error: CastTransformer[Err, F] = Error[Err],
+        ok: Caster[Value, T] = Ok,
+        error: Caster[Err, F] = Error[Err],
         /,
     ) -> LazyCoro[T | F]:
         async def wrapper() -> T | F:

@@ -19,3 +19,10 @@ class BindStaticMeta(type):
             namespace["get_args"] = _GetArgsDescriptor()
 
         return super().__new__(mcls, name, bases, namespace)
+
+
+def is_dunder(attr: str) -> bool:
+    return attr.startswith("__") and attr.endswith("__")
+
+
+type Caster[T, R] = typing.Callable[[T], R] | type[type[T]]

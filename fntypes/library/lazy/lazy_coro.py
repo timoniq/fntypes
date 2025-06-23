@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import typing
 
-from fntypes.lazy import Lazy
-from fntypes.tools import acache
+from fntypes.library.lazy.lazy import Lazy
+from fntypes.library.caching import acache
 
 
 class LazyCoro[Value]:

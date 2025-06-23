@@ -3,12 +3,12 @@ from __future__ import annotations
 import typing
 from reprlib import recursive_repr
 
-from fntypes.error import UnwrapError
-from fntypes.internal.custom_types import CastTransformer
-from fntypes.log_factory import ErrorLogFactoryMixin
+from fntypes.library.error import UnwrapError
+from fntypes.utilities.misc import Caster
+from fntypes.utilities.log_factory import ErrorLogFactoryMixin
 
 if typing.TYPE_CHECKING:
-    from fntypes import LazyCoroResult
+    from fntypes.library.lazy.lazy_coro_result import LazyCoroResult
 
 type Result[T, E] = Ok[T] | Error[E]
 type Wrapped[T] = Ok[T] | Error[typing.Any]
@@ -89,7 +89,7 @@ class Ok[Value]:
         return f(self._value)
 
     def to_async(self) -> LazyCoroResult[Value, typing.Any]:
-        from fntypes import LazyCoro, LazyCoroResult
+        from fntypes.library.lazy.lazy_coro_result import LazyCoro, LazyCoroResult
 
         return LazyCoroResult(LazyCoro.pure(self))
 
@@ -165,13 +165,13 @@ class Error[E](ErrorLogFactoryMixin[E]):
     def cast[T](
         self,
         ok: object = _default_ok,
-        error: CastTransformer[E, T] = _default_error,
+        error: Caster[E, T] = _default_error,
         /,
     ) -> T:
         return error(self._error)
 
     def to_async(self) -> LazyCoroResult[typing.Any, E]:
-        from fntypes import LazyCoro, LazyCoroResult
+        from fntypes.library.lazy.lazy_coro_result import LazyCoro, LazyCoroResult
 
         return LazyCoroResult(LazyCoro.pure(self))
 

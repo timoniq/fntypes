@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from fntypes.tools import cache
+from fntypes.library.caching import cache
 
 
 class Lazy[Value]:
