@@ -15,7 +15,7 @@ def to_catchable(base: type[Catchable], exception: type[BaseException], /) -> ty
 
 def error_to_exception_args(error: typing.Any, /) -> tuple[object, ...]:
     if is_exception(error):
-        return error.args if not isinstance(error, type) else ()
+        return (error.args or (error,)) if not isinstance(error, type) else ()
     return () if error is None else (error,)
 
 
