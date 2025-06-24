@@ -1,11 +1,11 @@
 import random
 
-from fntypes.co import *  # noqa: F403
+from fntypes import unwrapping, Option, Result, Some, Nothing, Ok, Error, is_err
 
 
 @unwrapping
 def calculate_something(arr: list[Option[int]]) -> Result[int, str]:
-    if not arr[0].unwrap_or_none():
+    if is_err(arr[0]):
         return Error("Invalid first element")
     s = arr[0].unwrap()
     for coeff in arr[1:]:

@@ -8,6 +8,9 @@ def test_union_only_head() -> None:
     assert a.only().unwrap() == 5
     assert a.v == 5
 
+    assert a[int].unwrap() == 5
+    assert a[str].unwrap_or_none() == None
+
     b = Variative[int, str]("String")
     with pytest.raises(TypeError):
         b.only().unwrap()
