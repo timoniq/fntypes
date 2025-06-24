@@ -1,6 +1,6 @@
 import random
 
-from fntypes.co import *  # noqa: F403
+from fntypes import unwrapping, Option, Result, Some, Nothing, Ok, Error
 
 
 @unwrapping

@@ -1,4 +1,4 @@
-from fntypes.variative import Variative
+from fntypes.library.variative import Variative
 
 u = Variative[int, str, float](1)
 

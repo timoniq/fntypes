@@ -1,7 +1,6 @@
 import pytest
 
-from fntypes.result import Error, Ok, Result
-from fntypes.tools.unwrapping import unwrapping
+from fntypes import Error, Ok, Result, unwrapping
 
 
 def test_unwrapping() -> None:

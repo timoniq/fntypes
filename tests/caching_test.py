@@ -1,4 +1,4 @@
-from fntypes.tools import acache, cache
+from fntypes import acache, cache
 
 
 def test_cache() -> None:

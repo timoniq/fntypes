@@ -1,8 +1,8 @@
-from fntypes import Error, Ok, Result, Some, Wrapped, unwrapping
+from fntypes import Error, Ok, Result, Some, unwrapping
 
 
 @unwrapping
-def divide(a: Wrapped[float], b: Wrapped[float]) -> Result[float, str]:
+def divide(a: Result[float, str], b: Result[float, str]) -> Result[float, str]:
     if b.unwrap() == 0:
         return Error("Division by zero")
     return Ok(a.unwrap() / b.unwrap())

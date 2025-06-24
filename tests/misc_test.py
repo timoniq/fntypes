@@ -1,5 +1,4 @@
-from fntypes.misc import either, this
-from fntypes.result import Error, Ok
+from fntypes import either, this, Error, Ok
 
 
 def test_this() -> None:

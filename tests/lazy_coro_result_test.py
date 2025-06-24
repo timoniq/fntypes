@@ -1,9 +1,6 @@
 import pytest
 
-from fntypes import LazyCoro
-from fntypes.error import UnwrapError
-from fntypes.option import Nothing, Some
-from fntypes.result import Error, Ok, Result
+from fntypes import LazyCoro, UnwrapError, Nothing, Some, Error, Ok, Result
 
 
 async def inc_number(n: int) -> Result[int, TypeError]:

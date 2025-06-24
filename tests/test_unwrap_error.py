@@ -1,6 +1,6 @@
 import pytest
 
-from fntypes.error import UnwrapError
+from fntypes import UnwrapError
 
 
 def test_unwrap_error_with_no_exception() -> None:

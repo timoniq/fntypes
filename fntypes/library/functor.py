@@ -40,7 +40,8 @@ class F[R, **P = [R]]:
             error = lambda _: UnwrapError()
 
         elif isinstance(error, str):
-            error = lambda _: UnwrapError(error)
+            e = error
+            error = lambda _: UnwrapError(e)
 
         elif isinstance(error, BaseException):
             e = error
