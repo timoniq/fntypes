@@ -4,11 +4,15 @@ import inspect
 import types
 import typing
 
-type Caster[T, R] = typing.Callable[[T], R] | type[type[T]]
+type Caster[T, R] = typing.Callable[[T], R]
 
 
 def is_dunder(attr: str) -> bool:
     return attr.startswith("__") and attr.endswith("__")
+
+
+def is_exception(obj: typing.Any, /) -> typing.TypeIs[BaseException | type[BaseException]]:
+    return isinstance(obj, BaseException) or isinstance(obj, type) and issubclass(obj, BaseException)
 
 
 def get_frame(depth: int = 0) -> types.FrameType | None:
@@ -34,3 +38,6 @@ class BindStaticMeta(type):
             namespace["get_args"] = _GetArgsDescriptor()
 
         return super().__new__(mcls, name, bases, namespace)
+
+
+__all__ = ("is_exception", "is_dunder", "get_frame")

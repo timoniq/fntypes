@@ -12,6 +12,7 @@ if typing.TYPE_CHECKING:
 
 type Result[T, E] = Ok[T] | Error[E]
 type Wrapped[T] = Ok[T] | Error[typing.Any]
+type AnyCallable = typing.Callable[[typing.Any], object]
 
 
 def _default_ok[T](value: T, /) -> Ok[T]:
@@ -39,7 +40,7 @@ class Ok[Value]:
         return True
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Ok):
+        if not isinstance(other, self.__class__):
             return False
         return self._value == other.value
 
@@ -65,19 +66,19 @@ class Ok[Value]:
     def map[T](self, op: typing.Callable[[Value], T], /) -> Ok[T]:
         return Ok(op(self._value))
 
-    def map_err(self, f: object, /) -> Ok[Value]:
+    def map_err(self, f: AnyCallable, /) -> Ok[Value]:
         return self
 
     def map_or[T](self, default_value: T, f: typing.Callable[[Value], T], /) -> Ok[T]:
         return Ok(f(self._value))
 
-    def map_or_else[T](self, default_f: object, f: typing.Callable[[Value], T], /) -> Ok[T]:
+    def map_or_else[T](self, default_f: AnyCallable, f: typing.Callable[[Value], T], /) -> Ok[T]:
         return Ok(f(self._value))
 
     def cast[T](
         self,
-        ok: typing.Callable[[Value], T] | Ok[Value] = _default_ok,
-        error: object = _default_error,
+        ok: typing.Callable[[Value], T] = _default_ok,
+        error: AnyCallable = _default_error,
         /,
     ) -> T:
         return ok(self._value)
@@ -107,7 +108,7 @@ class Error[E](ErrorLogFactoryMixin[E]):
         super().__init__()
 
     def __eq__(self, other: object, /) -> bool:
-        if not isinstance(other, Error):
+        if not isinstance(other, self.__class__):
             return NotImplemented
         return self._error == other.error
 
@@ -144,16 +145,16 @@ class Error[E](ErrorLogFactoryMixin[E]):
     def unwrap_or_other[T](self, other: Result[T, object], /) -> T:
         return other.unwrap()
 
-    def map(self, op: object, /) -> typing.Self:
+    def map(self, op: typing.Callable[[typing.Any], object], /) -> typing.Self:
         return self
 
     def map_err[Err](self, f: typing.Callable[[E], Err], /) -> Error[Err]:
         return Error(f(self._error))
 
-    def map_or[T](self, default_value: T, f: object, /) -> Ok[T]:
+    def map_or[T](self, default_value: T, f: AnyCallable, /) -> Ok[T]:
         return Ok(default_value)
 
-    def map_or_else[Err, T](self, default_f: typing.Callable[[E], T], f: object, /) -> Ok[T]:
+    def map_or_else[Err, T](self, default_f: typing.Callable[[E], T], f: AnyCallable, /) -> Ok[T]:
         return Ok(default_f(self._error))
 
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
@@ -164,7 +165,7 @@ class Error[E](ErrorLogFactoryMixin[E]):
 
     def cast[T](
         self,
-        ok: object = _default_ok,
+        ok: AnyCallable = _default_ok,
         error: Caster[E, T] = _default_error,
         /,
     ) -> T:
@@ -176,4 +177,4 @@ class Error[E](ErrorLogFactoryMixin[E]):
         return LazyCoroResult(LazyCoro.pure(self))
 
 
-__all__ = ("Ok", "Error", "Result", "Wrapped")
+__all__ = ("Error", "Ok", "Result", "Wrapped")

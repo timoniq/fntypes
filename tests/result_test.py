@@ -70,7 +70,7 @@ def test_result_err():
 
 def test_nothing() -> None:
     nothing = Nothing()
-    with pytest.raises(UnwrapError, match="None"):
+    with pytest.raises(UnwrapError, match="^$"):
         nothing.unwrap()
 
     assert repr(nothing) == "Nothing()"
@@ -86,7 +86,7 @@ def test_some() -> None:
 
 
 def test_log_factory() -> None:
-    dct = {}
+    dct = dict[str, str]()
     RESULT_ERROR_LOGGER.set_log(lambda err: dct.update({"err": err}))
     RESULT_ERROR_LOGGER.set_traceback_formatter(lambda: "")
 
