@@ -95,6 +95,6 @@ x.then(send_to_queue).unwrap() # IndexType(1)
 # Cast returns a union of two states' types
 x.cast() # Will return the same union of Result[float, str]
 x.cast(Some, lambda _: Nothing()) # Will cast it into a Option-like type (quite useful)
-# OR (due to Nothing-type argument suppression)
+# OR a more elegant way (thanks to Nothing-type argument suppression)
 x.cast(Some, Nothing)
 ```

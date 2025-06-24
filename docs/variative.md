@@ -17,6 +17,14 @@ x.only(B) # Result[B, str]
 x.only() # Result[A, str] (heading type of variative is A)
 ```
 
+Now, when you understand the concept, the syntaxic replacement can be intruduced:
+
+```python
+x[B].expect("Can only be B")
+# Can be used interchangably with
+x.only(B).expect("Can only be B")
+```
+
 ## `.detach()`
 
 Head ensures that variative is not of *head* type and returns a result with a value-state of variative of *tail* types.
