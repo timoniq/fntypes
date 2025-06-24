@@ -11,11 +11,6 @@ class Message:
 
 
 @dataclass
-class PhotoMessage(Message):
-    photo: str
-
-
-@dataclass
 class Call:
     from_user: int
 
@@ -34,9 +29,9 @@ def process_event(event: Event) -> None:
         case Message(from_user, Some(text)):
             send_message(from_user, Some("Hi. Thank you for your message " + repr(text)))
         case Message(from_user, _):
-            send_message(from_user, Some("Hey, why you sent me an empty message?"))
+            send_message(from_user, Some("Hey, why did you send me this empty message?"))
         case Call(from_user):
-            send_message(from_user, Some("Oh sorry I can't speak now"))
+            send_message(from_user, Some("Sorry I'm driving!"))
 
 
 process_event(Event(Message(1, Some("Hi, friend!!!"))))
