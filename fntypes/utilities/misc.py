@@ -15,6 +15,10 @@ def is_exception(obj: typing.Any, /) -> typing.TypeIs[BaseException | type[BaseE
     return isinstance(obj, BaseException) or isinstance(obj, type) and issubclass(obj, BaseException)
 
 
+def to_exception_class[T: BaseException](exception: T | type[T], /) -> type[T]:
+    return exception if isinstance(exception, type) else type(exception)
+
+
 def get_frame(depth: int = 0) -> types.FrameType | None:
     frame = inspect.currentframe()
 
@@ -40,4 +44,4 @@ class BindStaticMeta(type):
         return super().__new__(mcls, name, bases, namespace)
 
 
-__all__ = ("is_exception", "is_dunder", "get_frame")
+__all__ = ("get_frame", "is_dunder", "is_exception", "to_exception_class")

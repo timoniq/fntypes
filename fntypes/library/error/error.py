@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 import typing
-from functools import cached_property
+from functools import cached_property, lru_cache
 
-from fntypes.utilities.misc import is_exception
+from fntypes.utilities.misc import is_exception, to_exception_class
 
 if typing.TYPE_CHECKING:
     from fntypes.library.monad.option import Option
 
 
+@lru_cache
 def to_catchable(base: type[Catchable], exception: type[BaseException], /) -> type[Catchable]:
     return type(exception.__name__, (base, exception), dict(__module__=exception.__module__))
 
@@ -25,9 +26,8 @@ class Catchable(BaseException):
 
 class UnwrapError[T](Catchable):
     def __new__(cls, error: T | None = None) -> typing.Self:
-        if error is not None and is_exception(error):
-            exception = error if isinstance(error, type) else type(error)
-            catchable = to_catchable(cls, exception)
+        if error is not None and is_exception(error) and (exception_class := to_exception_class(error)) is not cls:
+            catchable = to_catchable(cls, exception_class)
             unwrap_error = typing.cast("typing.Self", super(cls, catchable).__new__(catchable))  # type: ignore
         else:
             unwrap_error = super().__new__(cls)
