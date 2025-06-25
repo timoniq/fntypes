@@ -41,4 +41,4 @@ print(
 
 print(u[Cat])  # Result[Cat, str]
 print(u[Cat].unwrap_or_none())  # Cat()
-print(u[Dog].unwrap_or_none()) # None
+print(u[Dog].unwrap_or_none())  # None

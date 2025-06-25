@@ -1,6 +1,10 @@
 import pytest
 
-from fntypes import UnwrapError, is_err, is_ok, Nothing, Some, Error, Ok, Result, RESULT_ERROR_LOGGER
+from fntypes.library.error import UnwrapError
+from fntypes.library.misc import is_err, is_ok
+from fntypes.library.monad.option import Nothing, Some
+from fntypes.library.monad.result import Error, Ok, Result
+from fntypes.utilities.log_factory import RESULT_ERROR_LOGGER
 
 
 def inc_number(n: int) -> Result[int, TypeError]:
@@ -66,7 +70,7 @@ def test_result_err():
 
 def test_nothing() -> None:
     nothing = Nothing()
-    with pytest.raises(UnwrapError, match="None"):
+    with pytest.raises(UnwrapError, match="^$"):
         nothing.unwrap()
 
     assert repr(nothing) == "Nothing()"
@@ -82,7 +86,7 @@ def test_some() -> None:
 
 
 def test_log_factory() -> None:
-    dct = {}
+    dct = dict[str, str]()
     RESULT_ERROR_LOGGER.set_log(lambda err: dct.update({"err": err}))
     RESULT_ERROR_LOGGER.set_traceback_formatter(lambda: "")
 

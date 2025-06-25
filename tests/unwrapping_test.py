@@ -1,6 +1,7 @@
 import pytest
 
-from fntypes import Error, Ok, Result, unwrapping
+from fntypes.library.monad.result import Error, Ok, Result
+from fntypes.library.unwrapping import unwrapping
 
 
 def test_unwrapping() -> None:

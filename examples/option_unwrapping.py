@@ -1,6 +1,6 @@
 import random
 
-from fntypes import unwrapping, Option, Result, Some, Nothing, Ok, Error, is_err
+from fntypes import Error, Nothing, Ok, Option, Result, Some, is_err, unwrapping
 
 
 @unwrapping

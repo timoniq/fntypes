@@ -1,6 +1,6 @@
 import typing
 
-from fntypes import Variative
+from fntypes.library.variative import Variative
 
 
 def test_dunder_get_args() -> None:

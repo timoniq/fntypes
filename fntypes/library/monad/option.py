@@ -3,8 +3,8 @@ from __future__ import annotations
 import typing
 from reprlib import recursive_repr
 
-from fntypes.utilities.singleton import Singleton
-from fntypes.library.monad.result import Error, Ok
+from fntypes.library.monad.result import AnyCallable, Error, Ok, Result
+from fntypes.utilities.singleton.singleton import Singleton
 
 type Option[T] = Some[T] | Nothing
 
@@ -30,7 +30,7 @@ class Nothing(Singleton, Error[None]):
     def __del__(self) -> None:
         pass
 
-    def then(self, f: object, /) -> Nothing:
+    def then(self, f: AnyCallable, /) -> Nothing:
         return Nothing()
 
 
@@ -45,8 +45,8 @@ class Some[Value](Ok[Value]):
     def map[T](self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self._value))
 
-    def then[T](self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:
+    def then[T](self, f: typing.Callable[[Value], Result[T, typing.Any]], /) -> Ok[T] | Error[None]:
         return f(self._value)
 
 
-__all__ = ("Nothing", "Some", "Option")
+__all__ = ("Nothing", "Option", "Some")

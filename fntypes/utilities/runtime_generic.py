@@ -19,6 +19,7 @@ class Proxy:
         obj = getattr(origin, __name)
 
         if inspect.ismethod(obj) and hasattr(obj, "__self__") and isinstance(obj.__self__, type):
+
             def method_adapter(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
                 return obj.__func__(self, *args, **kwargs)
 
@@ -57,7 +58,7 @@ class RuntimeGeneric:
 
         get_item_method = getattr(ancestor, "__class_getitem__", None)
         if get_item_method is None:
-            raise TypeError(f"Type '{cls.__name__}' is not subscriptable and it has no __class_getitem__ method") from None
+            raise TypeError(f"Type {cls.__name__!r} is not subscriptable and it has no __class_getitem__ method") from None
 
         generic = get_item_method(key)
 

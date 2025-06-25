@@ -1,8 +1,9 @@
-from fntypes import either, this, Error, Ok
+from fntypes.library.misc import either, identity
+from fntypes.library.monad.result import Error, Ok
 
 
-def test_this() -> None:
-    assert this(1) == 1
+def test_identity() -> None:
+    assert identity(1) == 1
 
 
 def test_either() -> None:

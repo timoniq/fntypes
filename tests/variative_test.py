@@ -1,6 +1,6 @@
 import pytest
 
-from fntypes import Variative
+from fntypes.library.variative import Variative
 
 
 def test_union_only_head() -> None:

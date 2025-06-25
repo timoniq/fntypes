@@ -1,16 +1,11 @@
 from __future__ import annotations
 
+import typing
 from collections.abc import Callable
 
-import typing
-
 from fntypes.library.error import UnwrapError
+from fntypes.library.misc import identity, is_ok
 from fntypes.library.monad.result import Result
-from fntypes.library.misc import is_ok
-
-
-def identity[T](x: T, /) -> T:
-    return x
 
 
 class F[R, **P = [R]]:
@@ -56,10 +51,10 @@ class F[R, **P = [R]]:
         return F(check)
 
     def expect[T, Err](
-        self: "F[Result[T, Err], P]",
+        self: F[Result[T, Err], P],
         error: Callable[[Result[T, Err]], BaseException] | BaseException | str | None = None,
-    ) -> "F[T, P]":
-        return self.must_be(lambda result: is_ok(result), error=error).then(lambda result: result.unwrap())
+    ) -> F[T, P]:
+        return self.must_be(is_ok, error=error).then(lambda result: result.unwrap())
 
 
 __all__ = ("F",)

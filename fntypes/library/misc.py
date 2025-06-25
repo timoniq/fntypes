@@ -4,8 +4,8 @@ from fntypes.library.monad.option import Nothing, Option, Some
 from fntypes.library.monad.result import Error, Ok, Result
 
 
-def this[T](obj: T, /) -> T:
-    return obj
+def identity[T](x: T, /) -> T:
+    return x
 
 
 def either[T, Err](result: Result[T, Err], or_: typing.Callable[[], Result[T, Err]], /) -> Result[T, Err]:
@@ -40,11 +40,11 @@ def is_nothing(option: Option[typing.Any], /) -> typing.TypeIs[Nothing]:
 
 
 __all__ = (
-    "this",
     "either",
-    "is_ok",
-    "is_err",
-    "is_some",
-    "is_nothing",
     "from_optional",
+    "identity",
+    "is_err",
+    "is_nothing",
+    "is_ok",
+    "is_some",
 )
