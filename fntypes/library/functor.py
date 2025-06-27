@@ -26,7 +26,7 @@ class F[R, **P = [R]]:
     def then[T](self, g: Callable[[R], T], /) -> F[T, P]:
         return F(lambda *args, **kwargs: g(self.f(*args, **kwargs)))
 
-    def must_be(
+    def ensure(
         self,
         chk: Callable[[R], bool],
         error: Callable[[R], BaseException] | BaseException | str | None = None,
@@ -54,7 +54,7 @@ class F[R, **P = [R]]:
         self: F[Result[T, Err], P],
         error: Callable[[Result[T, Err]], BaseException] | BaseException | str | None = None,
     ) -> F[T, P]:
-        return self.must_be(is_ok, error=error).then(lambda result: result.unwrap())
+        return self.ensure(is_ok, error=error).then(lambda result: result.unwrap())
 
 
 __all__ = ("F",)
