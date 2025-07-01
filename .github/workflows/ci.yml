@@ -61,4 +61,4 @@ jobs:
           path: .pytest_cache
 
       - name: "Run pytest"
-        run: uv run pytest tests --cov
+        run: uv run pytest tests
