@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import typing_extensions as typing
 
 from fntypes.library.monad.option import Nothing, Option, Some
@@ -8,7 +10,7 @@ def identity[T](x: T, /) -> T:
     return x
 
 
-def either[T, Err](result: Result[T, Err], or_: typing.Callable[[], Result[T, Err]], /) -> Result[T, Err]:
+def either[T, Err](result: Result[T, Err], or_: Callable[[], Result[T, Err]], /) -> Result[T, Err]:
     match result:
         case Ok(_):
             return result

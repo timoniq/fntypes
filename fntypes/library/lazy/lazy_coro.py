@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+from collections.abc import Callable
 
 from fntypes.library.caching import acache
 from fntypes.library.lazy.lazy import Lazy
@@ -11,7 +12,7 @@ class LazyCoro[Value]:
 
     def __init__(
         self,
-        value: typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, Value]],
+        value: Callable[[], typing.Coroutine[typing.Any, typing.Any, Value]],
         /,
     ) -> None:
         self._value = value
@@ -23,13 +24,13 @@ class LazyCoro[Value]:
 
         return LazyCoro(wrapper)
 
-    def map[T](self, op: typing.Callable[[Value], T], /) -> LazyCoro[T]:
+    def map[T](self, op: Callable[[Value], T], /) -> LazyCoro[T]:
         async def wrapper() -> T:
             return op(await self())
 
         return LazyCoro(wrapper)
 
-    def then[T](self, f: typing.Callable[[Value], typing.Awaitable[T]]) -> LazyCoro[T]:
+    def then[T](self, f: Callable[[Value], typing.Awaitable[T]]) -> LazyCoro[T]:
         async def wrapper() -> T:
             return await f(await self())
 

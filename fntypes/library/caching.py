@@ -5,7 +5,7 @@ import typing
 from fntypes.library.monad.option import Nothing, Option, Some
 
 
-def cache[T](func: typing.Callable[[], T]) -> typing.Callable[[], T]:
+def cache[T](func: collections.abc.Callable[[], T]) -> collections.abc.Callable[[], T]:
     cached: Option[T] = Nothing()
 
     @functools.wraps(func)
@@ -24,8 +24,8 @@ def cache[T](func: typing.Callable[[], T]) -> typing.Callable[[], T]:
 
 
 def acache[T](
-    func: typing.Callable[[], collections.abc.Coroutine[typing.Any, typing.Any, T]],
-) -> typing.Callable[[], collections.abc.Coroutine[typing.Any, typing.Any, T]]:
+    func: collections.abc.Callable[[], collections.abc.Coroutine[typing.Any, typing.Any, T]],
+) -> collections.abc.Callable[[], collections.abc.Coroutine[typing.Any, typing.Any, T]]:
     cached: Option[T] = Nothing()
 
     @functools.wraps(func)
