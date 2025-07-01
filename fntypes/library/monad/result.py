@@ -88,7 +88,7 @@ class Ok[Value]:
 
     def then[T, Err](self, f: typing.Callable[[Value], Result[T, Err]], /) -> Result[T, Err]:
         return f(self._value)
-    
+
     def ensure[T, Err](self, chk: typing.Callable[[Value], bool], error: Err) -> Result[T, Err]:
         f = lambda result: result if chk(self._value) else Error(error)
         return self.then(f)
@@ -166,7 +166,7 @@ class Error[E](ErrorLogFactoryMixin[E]):
 
     def then[T, Err](self, f: typing.Callable[..., Result[T, Err]], /) -> Error[E]:
         return self
-    
+
     def ensure(self, f: typing.Callable[..., bool], error: E) -> Error[E]:
         return self
 

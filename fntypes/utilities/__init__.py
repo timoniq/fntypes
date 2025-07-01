@@ -4,11 +4,11 @@ from fntypes.utilities.runtime_generic import RuntimeGeneric
 from fntypes.utilities.singleton.singleton import Singleton, SingletonMeta
 
 __all__ = (
+    "Caster",
     "RESULT_ERROR_LOGGER",
     "ResultLoggingFactory",
     "RuntimeGeneric",
     "Singleton",
-    "Caster",
     "SingletonMeta",
     "get_frame",
     "is_dunder",

@@ -1,4 +1,5 @@
 import typing
+
 from fntypes.library.monad.result import Result
 
 class Variative[*Ts]:

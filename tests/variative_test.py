@@ -1,8 +1,9 @@
-import pytest
 import re
 
-from fntypes.library.variative import Variative
+import pytest
+
 from fntypes.library.error import UnwrapError
+from fntypes.library.variative import Variative
 
 
 def test_union_only_head() -> None:
