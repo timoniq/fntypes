@@ -84,7 +84,7 @@ class Variative[*Ts](RuntimeGeneric):
         if isinstance(self._value, head) and not isinstance(self._value, tuple(tail)):
             return Error(f"`{repr(self)}` is of type `{head}`. Thus, head cannot be detached.")
 
-        return Ok(Variative[*tail](self._value)) if tail else Ok(self._value)  # type: ignore[UnknownVariableType]
+        return Ok(Variative[*tail](self._value))  # type: ignore[UnknownVariableType]
 
 
 __all__ = ("Variative",)
