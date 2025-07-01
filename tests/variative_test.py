@@ -1,6 +1,8 @@
 import pytest
+import re
 
 from fntypes.library.variative import Variative
+from fntypes.library.error import UnwrapError
 
 
 def test_union_only_head() -> None:
@@ -12,7 +14,7 @@ def test_union_only_head() -> None:
     assert a[str].unwrap_or_none() == None
 
     b = Variative[int, str]("String")
-    with pytest.raises(TypeError):
+    with pytest.raises(UnwrapError, match=re.escape("`Variative[int, str]('String')` cannot be set only to type `<class 'int'>`.")):
         b.only().unwrap()
 
     assert b.only().unwrap_or_none() is None
@@ -22,7 +24,7 @@ def test_union_only_custom() -> None:
     a = Variative[int, str, list]("String")
     assert a.only(str).unwrap() == "String"
 
-    with pytest.raises(TypeError):
+    with pytest.raises(UnwrapError, match=re.escape("`Variative[int, str, list]('String')` cannot be set only to type `<class 'int'>`.")):
         a.only(int).unwrap()
 
     assert a.only(int).unwrap_or_none() is None
@@ -31,7 +33,7 @@ def test_union_only_custom() -> None:
 
 def test_union_detach():
     a = Variative[int, str]("String")
-    assert a.detach().unwrap() == "String"
+    assert a.detach().unwrap().v == "String"
 
     b = Variative[int, str](1)
     assert b.detach().unwrap_or_none() is None
@@ -41,7 +43,7 @@ def test_union_detach():
     assert isinstance(detached, Variative)
     assert detached.get_args() == (str, list)
 
-    with pytest.raises(TypeError):
+    with pytest.raises(UnwrapError):
         detached.detach().unwrap()
 
 
