@@ -10,15 +10,15 @@ from fntypes.utilities.misc import is_dunder
 GENERIC_CLASS_ATTRS: typing.Final[set[str]] = set(dir(types.GenericAlias))
 
 
-def wrap_origin_method(
+def bound_proxy(
     method: typing.Any,
     proxy: GenericProxy,
     /,
 ) -> typing.Any:
-    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    def bound(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         return method.__func__(proxy, *args, **kwargs)
 
-    return wrapper
+    return bound
 
 
 class GenericProxy:
@@ -32,7 +32,7 @@ class GenericProxy:
         obj = getattr(self._generic.__origin__, __name)
 
         if inspect.ismethod(obj) and hasattr(obj, "__self__") and isinstance(obj.__self__, type):
-            return wrap_method(obj, self)
+            return bound_proxy(obj, self)
 
         return obj
 
