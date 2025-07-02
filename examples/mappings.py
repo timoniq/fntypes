@@ -19,6 +19,7 @@ def get_n() -> Result[int, str]:
 
 n = get_n()
 
+
 print(map_error(n))  # Nothing()
 print(map_value(n))  # Error("Something happened")
 print(map_or(n))  # 0

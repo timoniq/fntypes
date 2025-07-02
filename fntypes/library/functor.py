@@ -11,6 +11,8 @@ from fntypes.library.monad.result import Result
 class F[R, **P = [R]]:
     f: typing.Final[Callable[P, R]]
 
+    __slots__ = ("f",)
+
     @typing.overload
     def __init__[T](self: F[T, [T]], /) -> None: ...
 

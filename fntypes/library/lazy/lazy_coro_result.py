@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import collections.abc
 import typing
+from collections.abc import Awaitable, Callable
 from typing import assert_never
 
 from fntypes.library.caching import acache
@@ -15,7 +15,7 @@ class LazyCoroResult[Value, Err]:
 
     def __init__(
         self,
-        value: typing.Callable[[], typing.Coroutine[typing.Any, typing.Any, Result[Value, Err]]],
+        value: Callable[[], typing.Coroutine[typing.Any, typing.Any, Result[Value, Err]]],
         /,
     ) -> None:
         self._value = value
@@ -39,7 +39,7 @@ class LazyCoroResult[Value, Err]:
 
         return LazyCoro(wrapper)
 
-    def unwrap_or[T](self, alternate_value: typing.Callable[[], typing.Awaitable[T]], /) -> LazyCoro[Value | T]:
+    def unwrap_or[T](self, alternate_value: Callable[[], typing.Awaitable[T]], /) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
             to_match = await self()
             match to_match:
@@ -58,7 +58,7 @@ class LazyCoroResult[Value, Err]:
 
         return LazyCoro(wrapper)
 
-    def unwrap_or_other[T](self, other: typing.Callable[[], typing.Awaitable[Result[T, Err]]], /) -> LazyCoro[Value | T]:
+    def unwrap_or_other[T](self, other: Callable[[], typing.Awaitable[Result[T, Err]]], /) -> LazyCoro[Value | T]:
         async def wrapper() -> Value | T:
             to_match = await self()
             match to_match:
@@ -71,13 +71,13 @@ class LazyCoroResult[Value, Err]:
 
         return LazyCoro(wrapper)
 
-    def map[T](self, op: typing.Callable[[Value], T], /) -> LazyCoroResult[T, Err]:
+    def map[T](self, op: Callable[[Value], T], /) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
             return (await self()).map(op)
 
         return LazyCoroResult(wrapper)
 
-    def map_err[E](self, f: typing.Callable[[Err], E], /) -> LazyCoroResult[Value, E]:
+    def map_err[E](self, f: Callable[[Err], E], /) -> LazyCoroResult[Value, E]:
         async def wrapper() -> Result[Value, E]:
             return (await self()).map_err(f)
 
@@ -85,8 +85,8 @@ class LazyCoroResult[Value, Err]:
 
     def map_or[T](
         self,
-        default_value: typing.Callable[[], typing.Awaitable[T]],
-        f: typing.Callable[[Value], T],
+        default_value: Callable[[], typing.Awaitable[T]],
+        f: Callable[[Value], T],
         /,
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
@@ -103,8 +103,8 @@ class LazyCoroResult[Value, Err]:
 
     def map_or_else[T](
         self,
-        default_f: typing.Callable[[Err], T],
-        f: typing.Callable[[Value], T],
+        default_f: Callable[[Err], T],
+        f: Callable[[Value], T],
         /,
     ) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
@@ -129,7 +129,7 @@ class LazyCoroResult[Value, Err]:
 
         return LazyCoro(wrapper)
 
-    def then[T](self, f: typing.Callable[[Value], collections.abc.Awaitable[Result[T, Err]]], /) -> LazyCoroResult[T, Err]:
+    def then[T](self, f: Callable[[Value], Awaitable[Result[T, Err]]], /) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
             to_match = await self()
             match to_match:

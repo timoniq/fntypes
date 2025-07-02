@@ -1,13 +1,27 @@
+from __future__ import annotations
+
 import inspect
 import types
 import typing
+from functools import cached_property
 
 from fntypes.utilities.misc import is_dunder
 
-GENERIC_CLASS_ATTRS = set(dir(types.GenericAlias))
+GENERIC_CLASS_ATTRS: typing.Final[set[str]] = set(dir(types.GenericAlias))
 
 
-class Proxy:
+def bound_proxy(
+    method: typing.Any,
+    proxy: GenericProxy,
+    /,
+) -> typing.Any:
+    def bound(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        return method.__func__(proxy, *args, **kwargs)
+
+    return bound
+
+
+class GenericProxy:
     def __init__(self, generic: typing.Any) -> None:
         self._generic = generic
 
@@ -15,29 +29,21 @@ class Proxy:
         if is_dunder(__name) or __name in GENERIC_CLASS_ATTRS:
             return getattr(self._generic, __name)
 
-        origin = self._generic.__origin__
-        obj = getattr(origin, __name)
+        obj = getattr(self._generic.__origin__, __name)
 
         if inspect.ismethod(obj) and hasattr(obj, "__self__") and isinstance(obj.__self__, type):
-
-            def method_adapter(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-                return obj.__func__(self, *args, **kwargs)
-
-            return method_adapter
+            return bound_proxy(obj, self)
 
         return obj
 
-    def __setattr__(self, name: str, value: typing.Any) -> None:
-        if name == "_generic":
-            super().__setattr__(name, value)
+    def __setattr__(self, __name: str, __value: typing.Any) -> None:
+        if __name == "_generic":
+            super().__setattr__(__name, __value)
         else:
-            setattr(self._generic, name, value)
+            setattr(self._generic, __name, __value)
 
     def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         return self._generic(*args, **kwargs)
-
-    def get_args(self) -> tuple[type[typing.Any], ...]:
-        return typing.get_args(self._generic)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} of {self._generic!r}>"
@@ -47,28 +53,29 @@ class Proxy:
     def __class__(self) -> type[types.GenericAlias]:
         return types.GenericAlias
 
-    @property
-    def __args__(self) -> tuple[type[typing.Any], ...]:
+    @cached_property
+    def __args__(self) -> tuple[typing.Any, ...]:
         return self.get_args()
+
+    def get_args(self) -> tuple[typing.Any, ...]:
+        return typing.get_args(self._generic)
 
 
 class RuntimeGeneric:
-    def __class_getitem__(cls, key: typing.Any) -> typing.Any:
-        ancestor = super(RuntimeGeneric, cls)
+    @property
+    def __args__(self) -> tuple[typing.Any, ...]:
+        return typing.get_args(getattr(self, "__orig_class__", self.__class__))
 
-        get_item_method = getattr(ancestor, "__class_getitem__", None)
-        if get_item_method is None:
-            raise TypeError(f"Type {cls.__name__!r} is not subscriptable and it has no __class_getitem__ method") from None
+    def __class_getitem__(cls, __key: typing.Any) -> typing.Any:
+        class_getitem = getattr(super(RuntimeGeneric, cls), "__class_getitem__", None)
+        if class_getitem is None:
+            raise TypeError(f"Type `{cls.__name__}` is not subscriptable and it has no `__class_getitem__` method.")
 
-        generic = get_item_method(key)
-
+        generic = class_getitem(__key)
         if any(typing.get_origin(arg) is not None for arg in typing.get_args(generic)):
             raise TypeError("Parametrized types are not supported.")
 
-        if getattr(generic, "__origin__", None):
-            return Proxy(generic)
-
-        return generic
+        return GenericProxy(generic) if getattr(generic, "__origin__", None) is not None else generic
 
 
-__all__ = ("Proxy", "RuntimeGeneric")
+__all__ = ("RuntimeGeneric", "GenericProxy")
