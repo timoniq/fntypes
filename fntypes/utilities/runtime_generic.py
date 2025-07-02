@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 import types
 import typing
@@ -8,13 +10,13 @@ from fntypes.utilities.misc import is_dunder
 GENERIC_CLASS_ATTRS: typing.Final[set[str]] = set(dir(types.GenericAlias))
 
 
-def method_adapter(
-    obj: typing.Any,
-    instance: typing.Any,
+def wrap_origin_method(
+    method: typing.Any,
+    proxy: GenericProxy,
     /,
 ) -> typing.Any:
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        return obj.__func__(instance, *args, **kwargs)
+        return method.__func__(proxy, *args, **kwargs)
 
     return wrapper
 
@@ -30,7 +32,7 @@ class GenericProxy:
         obj = getattr(self._generic.__origin__, __name)
 
         if inspect.ismethod(obj) and hasattr(obj, "__self__") and isinstance(obj.__self__, type):
-            return method_adapter(obj, self)
+            return wrap_method(obj, self)
 
         return obj
 
