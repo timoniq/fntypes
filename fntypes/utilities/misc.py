@@ -29,19 +29,4 @@ def get_frame(depth: int = 0) -> types.FrameType | None:
     return frame
 
 
-class _GetArgsDescriptor[Instance, Attribute]:
-    def __get__(self, instance: Instance | None, owner: type[Instance]) -> typing.Callable[[], tuple[typing.Any, ...]]:
-        if instance is None:
-            return getattr(owner, "get_args_cls")
-        return types.MethodType(getattr(owner, "get_args_self"), instance)
-
-
-class BindStaticMeta(type):
-    def __new__(mcls: type["BindStaticMeta"], name: str, bases: tuple[type], namespace: dict[str, typing.Any]):
-        if "get_args" in namespace:
-            namespace["get_args"] = _GetArgsDescriptor()
-
-        return super().__new__(mcls, name, bases, namespace)
-
-
-__all__ = ("get_frame", "is_dunder", "is_exception", "to_exception_class")
+__all__ = ("Caster", "get_frame", "is_dunder", "is_exception", "to_exception_class")

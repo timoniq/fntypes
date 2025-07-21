@@ -25,7 +25,7 @@ repos:
       - id: pyright
         name: pyright
         description: "Run 'pyright' for Python type checking"
-        entry: uv run pyright fntypes --level=ERROR
+        entry: uv run pyright fntypes --level error
         pass_filenames: false
         language: system
         types: [ python ]

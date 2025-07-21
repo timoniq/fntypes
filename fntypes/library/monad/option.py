@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 from reprlib import recursive_repr
 
-from fntypes.library.monad.result import AnyCallable, Error, Ok, Result
+from fntypes.library.monad.result import AnyCallable, Error, Ok
 from fntypes.utilities.singleton.singleton import Singleton
 
 type Option[T] = Some[T] | Nothing
@@ -18,10 +18,14 @@ class Nothing(Singleton, Error[None]):
     def __init__(self, *suppress_args: typing.Any) -> None:
         pass
 
-    def __init__(self, *_suppress_args: typing.Any) -> None:
-        self._error = None
+    def __init__(self, *_: typing.Any) -> None:
         self._tb = None
         self._is_controlled = False
+
+    @property
+    def _error(self) -> None:
+        # Immutable state of error for singleton instance
+        return None
 
     @recursive_repr()
     def __repr__(self) -> str:
@@ -45,7 +49,7 @@ class Some[Value](Ok[Value]):
     def map[T](self, op: typing.Callable[[Value], T], /) -> Some[T]:
         return Some(op(self._value))
 
-    def then[T](self, f: typing.Callable[[Value], Result[T, typing.Any]], /) -> Ok[T] | Error[None]:
+    def then[T](self, f: typing.Callable[[Value], Option[T]], /) -> Option[T]:  # pyright: ignore[reportIncompatibleMethodOverride]
         return f(self._value)
 
 

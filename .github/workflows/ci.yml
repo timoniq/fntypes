@@ -1,0 +1,64 @@
+name: CI
+
+'on':
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lock-file:
+    name: "Lock uv"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: asottile/workflows/.github/actions/fast-checkout@v1.8.1
+      - uses: ./.github/actions/install-dependencies
+      - run: uv lock --locked
+
+  linting:
+    name: "Linting"
+    runs-on: ubuntu-latest
+    needs: lock-file
+    steps:
+      - uses: asottile/workflows/.github/actions/fast-checkout@v1.8.1
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Load ruff cache
+        id: cached-ruff
+        uses: actions/cache@v4
+        with:
+          key: ruff-3.13-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          path: .ruff_cache
+
+      - name: "Run ruff"
+        run: uvx ruff check .
+
+  type-checking:
+    name: "Type-checking"
+    runs-on: ubuntu-latest
+    needs: lock-file
+    steps:
+      - uses: asottile/workflows/.github/actions/fast-checkout@v1.8.1
+      - uses: ./.github/actions/install-dependencies
+      - run: uv run pyright --level error
+
+  tests:
+    name: "Testing"
+    runs-on: ubuntu-latest
+    needs: lock-file
+    steps:
+      - uses: asottile/workflows/.github/actions/fast-checkout@v1.8.1
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Load pytest cache
+        id: cached-pytest
+        uses: actions/cache@v4
+        with:
+          key: pytest-3.13-${{ runner.os }}
+          path: .pytest_cache
+
+      - name: "Run pytest"
+        run: uv run pytest tests

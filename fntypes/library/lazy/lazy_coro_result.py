@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections.abc
 import typing
 from typing import assert_never
 
@@ -129,7 +128,7 @@ class LazyCoroResult[Value, Err]:
 
         return LazyCoro(wrapper)
 
-    def then[T](self, f: typing.Callable[[Value], collections.abc.Awaitable[Result[T, Err]]], /) -> LazyCoroResult[T, Err]:
+    def then[T](self, f: typing.Callable[[Value], typing.Awaitable[Result[T, Err]]], /) -> LazyCoroResult[T, Err]:
         async def wrapper() -> Result[T, Err]:
             to_match = await self()
             match to_match:

@@ -3,7 +3,7 @@ name = "fntypes"
 version = "0.2.1"
 description = ""
 authors = [{ name = "timoniq" }]
-requires-python = "~=3.13"
+requires-python = ">=3.13,<4.0"
 readme = "readme.md"
 dependencies = ["typing-extensions>=4.13.2,<5"]
 

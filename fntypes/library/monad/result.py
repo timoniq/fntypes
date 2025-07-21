@@ -10,9 +10,9 @@ from fntypes.utilities.misc import Caster
 if typing.TYPE_CHECKING:
     from fntypes.library.lazy.lazy_coro_result import LazyCoroResult
 
+type AnyCallable = typing.Callable[[typing.Any], object]
 type Result[T, E] = Ok[T] | Error[E]
 type Wrapped[T] = Ok[T] | Error[typing.Any]
-type AnyCallable = typing.Callable[[typing.Any], object]
 
 
 def _default_ok[T](value: T, /) -> Ok[T]:
@@ -27,7 +27,7 @@ class Ok[Value]:
     """`Result.Ok` representing success and containing a value."""
 
     __slots__ = ("_value",)
-    __match_args__ = ("value",)
+    __match_args__ = ("_value",)
 
     def __init__(self, value: Value, /) -> None:
         self._value = value
@@ -39,7 +39,7 @@ class Ok[Value]:
     def __bool__(self) -> typing.Literal[True]:
         return True
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: object, /) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return self._value == other.value
@@ -54,13 +54,13 @@ class Ok[Value]:
     def unwrap_err(self) -> typing.NoReturn:
         raise UnwrapError("Ok has no an error.")
 
-    def unwrap_or(self, alternate_value: object, /) -> Value:
+    def unwrap_or(self, alternate_value: typing.Any, /) -> Value:
         return self._value
 
     def unwrap_or_none(self) -> Value:
         return self._value
 
-    def unwrap_or_other(self, other: object, /) -> Value:
+    def unwrap_or_other(self, other: typing.Any, /) -> Value:
         return self._value
 
     def map[T](self, op: typing.Callable[[Value], T], /) -> Ok[T]:
@@ -88,9 +88,9 @@ class Ok[Value]:
 
     def then[T, Err](self, f: typing.Callable[[Value], Result[T, Err]], /) -> Result[T, Err]:
         return f(self._value)
-    
+
     def ensure[T, Err](self, chk: typing.Callable[[Value], bool], error: Err) -> Result[T, Err]:
-        f = lambda result: result if chk(self._value) else Error(error)
+        f: AnyCallable = lambda result: result if chk(self._value) else Error(error)
         return self.then(f)
 
     def to_async(self) -> LazyCoroResult[Value, typing.Any]:
@@ -103,7 +103,7 @@ class Error[E](ErrorLogFactoryMixin[E]):
     """`Result.Error` representing error and containing an error value."""
 
     __slots__ = ("_error", "_tb", "_is_controlled")
-    __match_args__ = ("error",)
+    __match_args__ = ("_error",)
 
     def __init__(self, error: E, /) -> None:
         self._error = error
@@ -149,7 +149,7 @@ class Error[E](ErrorLogFactoryMixin[E]):
     def unwrap_or_other[T](self, other: Result[T, object], /) -> T:
         return other.unwrap()
 
-    def map(self, op: typing.Callable[[typing.Any], object], /) -> typing.Self:
+    def map(self, op: AnyCallable, /) -> typing.Self:
         return self
 
     def map_err[Err](self, f: typing.Callable[[E], Err], /) -> Error[Err]:
@@ -164,10 +164,10 @@ class Error[E](ErrorLogFactoryMixin[E]):
     def expect(self, error: typing.Any, /) -> typing.NoReturn:
         raise UnwrapError(error)
 
-    def then[T, Err](self, f: typing.Callable[..., Result[T, Err]], /) -> Error[E]:
+    def then[T, Err](self, f: AnyCallable, /) -> Error[E]:
         return self
-    
-    def ensure(self, f: typing.Callable[..., bool], error: E) -> Error[E]:
+
+    def ensure(self, f: AnyCallable, error: E) -> Error[E]:
         return self
 
     def cast[T](
