@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import linecache
 import typing
-from collections.abc import Callable
 
 from fntypes.utilities.misc import get_frame
 
@@ -36,8 +35,8 @@ class ResultLoggingFactory:
 
     def __init__(
         self,
-        log: Callable[[str], None] | None = None,
-        traceback_formatter: Callable[[], str] = base_traceback_formatter,
+        log: typing.Callable[[str], None] | None = None,
+        traceback_formatter: typing.Callable[[], str] = base_traceback_formatter,
     ) -> None:
         self._log = log
         self._traceback_formatter = traceback_formatter
@@ -53,11 +52,11 @@ class ResultLoggingFactory:
     def format_traceback(self, error: typing.Any, /) -> str:
         return self._traceback_formatter() + "\n\n" + repr(error)
 
-    def set_log(self, log: Callable[[str], None], /) -> typing.Self:
+    def set_log(self, log: typing.Callable[[str], None], /) -> typing.Self:
         self._log = log
         return self
 
-    def set_traceback_formatter(self, formatter: Callable[[], str], /) -> typing.Self:
+    def set_traceback_formatter(self, formatter: typing.Callable[[], str], /) -> typing.Self:
         self._traceback_formatter = formatter
         return self
 

@@ -1,6 +1,5 @@
 import asyncio
 import typing
-from collections.abc import Callable
 from functools import wraps
 
 from fntypes.library.error.error import UnwrapError
@@ -8,7 +7,7 @@ from fntypes.library.monad.option import Nothing, Option
 from fntypes.library.monad.result import Error, Result
 
 type Coroutine[T] = typing.Coroutine[typing.Any, typing.Any, T]
-type Function[**P, R] = Callable[P, R]
+type Function[**P, R] = typing.Callable[P, R]
 
 
 def cast_error(error: UnwrapError[typing.Any], /) -> Error[typing.Any] | Nothing:

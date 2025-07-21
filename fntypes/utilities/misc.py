@@ -3,9 +3,8 @@ from __future__ import annotations
 import inspect
 import types
 import typing
-from collections.abc import Callable
 
-type Caster[T, R] = Callable[[T], R]
+type Caster[T, R] = typing.Callable[[T], R]
 
 
 def is_dunder(attr: str) -> bool:
