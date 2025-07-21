@@ -25,4 +25,5 @@ __all__ = (
     "is_ok",
     "is_some",
     "unwrapping",
+    "Pulse",
 )

@@ -29,7 +29,15 @@ class Ok[Value]:
     __slots__ = ("_value",)
     __match_args__ = ("_value",)
 
-    def __init__(self, value: Value, /) -> None:
+    @typing.overload
+    def __init__(self: "Ok[None]") -> None:
+        ...
+    
+    @typing.overload
+    def __init__(self, value: Value) -> None:
+        ...
+
+    def __init__(self, value: Value = None) -> None:  # type: ignore
         self._value = value
 
     @recursive_repr()
@@ -184,4 +192,6 @@ class Error[E](ErrorLogFactoryMixin[E]):
         return LazyCoroResult(LazyCoro.pure(self))
 
 
-__all__ = ("Error", "Ok", "Result", "Wrapped")
+type Pulse[E] = Ok[None] | Error[E]
+
+__all__ = ("Error", "Ok", "Result", "Wrapped", "Pulse")
