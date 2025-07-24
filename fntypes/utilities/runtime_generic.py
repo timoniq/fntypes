@@ -7,7 +7,10 @@ from functools import cached_property
 
 from fntypes.utilities.misc import is_dunder
 
-GENERIC_CLASS_ATTRS: typing.Final[set[str]] = set(dir(types.GenericAlias))
+GENERIC_CLASS_ATTRS: typing.Final[dict[typing.Any, set[str]]] = {
+    types.GenericAlias: set(dir(types.GenericAlias)),
+    typing._GenericAlias: set(dir(typing._GenericAlias)),  # type: ignore
+}
 
 
 def bound_proxy(
@@ -26,7 +29,7 @@ class GenericProxy:
         self._generic = generic
 
     def __getattr__(self, __name: str) -> typing.Any:
-        if is_dunder(__name) or __name in GENERIC_CLASS_ATTRS:
+        if is_dunder(__name) or __name in GENERIC_CLASS_ATTRS[type(self._generic)]:
             return getattr(self._generic, __name)
 
         obj = getattr(self._generic.__origin__, __name)
@@ -50,8 +53,8 @@ class GenericProxy:
 
     @property
     @typing.no_type_check
-    def __class__(self) -> type[types.GenericAlias]:
-        return types.GenericAlias
+    def __class__(self) -> type[typing.Any]:
+        return type(self._generic)
 
     @cached_property
     def __args__(self) -> tuple[typing.Any, ...]:
@@ -73,9 +76,9 @@ class RuntimeGeneric:
 
         generic = class_getitem(__key)
         if any(typing.get_origin(arg) is not None for arg in typing.get_args(generic)):
-            raise TypeError("Parametrized types are not supported.")
+            raise TypeError("Parametrized, annotated or union types are not supported.")
 
-        return GenericProxy(generic) if getattr(generic, "__origin__", None) is not None else generic
+        return GenericProxy(generic) if typing.get_origin(generic) is not None else generic
 
 
 __all__ = ("RuntimeGeneric", "GenericProxy")
