@@ -40,6 +40,12 @@ class UnwrapError[T](Catchable):
     def __init__(self, error: T | None = None) -> None:
         Catchable.__init__(self, *error_to_exception_args(error))
 
+    def __str__(self) -> str:
+        return self.__error__.map(str).unwrap_or("")
+
+    def __repr__(self) -> str:
+        return self.__error__.map(repr).unwrap_or("")
+
     @cached_property
     def __error__(self) -> Option[typing.Any]:
         # The cached property is a version for getting an error value from the __dict__.
