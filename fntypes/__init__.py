@@ -2,6 +2,7 @@ from fntypes.library import *
 from fntypes.utilities.log_factory import RESULT_ERROR_LOGGER
 
 __all__ = (
+    "RESULT_ERROR_LOGGER",
     "Error",
     "F",
     "Lazy",
@@ -10,7 +11,7 @@ __all__ = (
     "Nothing",
     "Ok",
     "Option",
-    "RESULT_ERROR_LOGGER",
+    "Pulse",
     "Result",
     "Some",
     "UnwrapError",
@@ -25,5 +26,4 @@ __all__ = (
     "is_ok",
     "is_some",
     "unwrapping",
-    "Pulse",
 )

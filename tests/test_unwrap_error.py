@@ -4,6 +4,11 @@ from fntypes.library.error.error import UnwrapError
 from fntypes.library.monad.option import Nothing
 
 
+def test_unwrap_error_with_nested_unwrap_error() -> None:
+    with pytest.raises(ZeroDivisionError, match="^$"):
+        raise UnwrapError(UnwrapError(ZeroDivisionError))
+
+
 def test_unwrap_error_with_no_exception() -> None:
     error = UnwrapError("Oops...")
     with pytest.raises(UnwrapError, match="Oops..."):

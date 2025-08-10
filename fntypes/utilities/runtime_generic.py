@@ -9,7 +9,7 @@ from fntypes.utilities.misc import is_dunder
 
 GENERIC_CLASS_ATTRS: typing.Final[dict[typing.Any, set[str]]] = {
     types.GenericAlias: set(dir(types.GenericAlias)),
-    typing._GenericAlias: set(dir(typing._GenericAlias)),  # type: ignore
+    typing._GenericAlias: set(dir(typing._GenericAlias)),  # pyright: ignore[reportAttributeAccessIssue, reportUnknownArgumentType, reportUnknownMemberType]
 }
 
 
@@ -81,4 +81,4 @@ class RuntimeGeneric:
         return GenericProxy(generic) if typing.get_origin(generic) is not None else generic
 
 
-__all__ = ("RuntimeGeneric", "GenericProxy")
+__all__ = ("GenericProxy", "RuntimeGeneric")

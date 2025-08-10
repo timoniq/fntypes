@@ -16,6 +16,7 @@ __all__ = (
     "Nothing",
     "Ok",
     "Option",
+    "Pulse",
     "Result",
     "Some",
     "UnwrapError",
@@ -30,5 +31,4 @@ __all__ = (
     "is_ok",
     "is_some",
     "unwrapping",
-    "Pulse",
 )
