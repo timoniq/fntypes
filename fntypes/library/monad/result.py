@@ -13,6 +13,7 @@ if typing.TYPE_CHECKING:
 type AnyCallable = typing.Callable[[typing.Any], object]
 type Result[T, E] = Ok[T] | Error[E]
 type Wrapped[T] = Ok[T] | Error[typing.Any]
+type Pulse[E] = Ok[None] | Error[E]
 
 
 def _default_ok[T](value: T, /) -> Ok[T]:
@@ -30,14 +31,12 @@ class Ok[Value]:
     __match_args__ = ("_value",)
 
     @typing.overload
-    def __init__(self: "Ok[None]") -> None:
-        ...
-    
-    @typing.overload
-    def __init__(self, value: Value) -> None:
-        ...
+    def __init__(self: Ok[None]) -> None: ...
 
-    def __init__(self, value: Value = None) -> None:  # type: ignore
+    @typing.overload
+    def __init__(self, value: Value, /) -> None: ...
+
+    def __init__(self, value: Value = None) -> None:  # pyright: ignore[reportInconsistentOverload]
         self._value = value
 
     @recursive_repr()
@@ -192,6 +191,4 @@ class Error[E](ErrorLogFactoryMixin[E]):
         return LazyCoroResult(LazyCoro.pure(self))
 
 
-type Pulse[E] = Ok[None] | Error[E]
-
-__all__ = ("Error", "Ok", "Result", "Wrapped", "Pulse")
+__all__ = ("Error", "Ok", "Pulse", "Result", "Wrapped")

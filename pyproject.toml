@@ -11,9 +11,9 @@ dependencies = ["typing-extensions>=4.13.2,<5"]
 dev = [
     "pytest>=8.3.5,<9",
     "pytest-asyncio>=1.0.0,<2",
-    "ruff>=0.11.12,<0.12",
-    "pyright>=1.1.401,<2",
-    "pre-commit>=4.2.0,<5.0.0"
+    "ruff>=0.12.8,<1.0.0",
+    "pyright[nodejs]>=1.1.403,<2",
+    "pre-commit>=4.3.0,<5.0.0"
 ]
 
 [build-system]

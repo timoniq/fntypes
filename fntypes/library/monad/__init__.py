@@ -6,7 +6,7 @@ __all__ = (
     "Nothing",
     "Ok",
     "Option",
+    "Pulse",
     "Result",
     "Some",
-    "Pulse",
 )
