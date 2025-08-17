@@ -31,6 +31,10 @@ def error_to_exception_args(error: typing.Any, /) -> tuple[object, ...]:
     return () if error is None else (error,)
 
 
+def is_unwrap_error(error: typing.Any, /) -> bool:
+    return is_exception(error) and issubclass(to_exception_class(error), UnwrapError)
+
+
 class Catchable(BaseException):
     pass
 
@@ -53,6 +57,34 @@ class UnwrapError[T](Catchable):
 
     def __init__(self, error: T | None = None) -> None:
         Catchable.__init__(self, *error_to_exception_args(error))
+
+    def __getattr__(self, __name: str) -> typing.Any:
+        from fntypes.library.monad.option import Some
+
+        match self.__error__:
+            case Some(error) if isinstance(error, BaseException):
+                if is_unwrap_error(error):
+                    nested_error: typing.Any = error
+
+                    while True:
+                        err = nested_error.__error__.unwrap_or_none()
+
+                        if err is None:
+                            nested_error = None
+                            break
+
+                        nested_error = err
+                        if not is_unwrap_error(err):
+                            break
+
+                    if nested_error is not None and isinstance(nested_error, BaseException):
+                        return getattr(nested_error, __name)
+                else:
+                    return getattr(error, __name)
+            case _:
+                pass
+
+        raise AttributeError(f"UnwrapError object has no attribute {__name!r}.")
 
     def __str__(self) -> str:
         return repr_unwrap_error_value(self.__error__, str)
