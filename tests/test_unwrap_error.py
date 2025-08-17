@@ -4,6 +4,32 @@ from fntypes.library.error.error import UnwrapError
 from fntypes.library.monad.option import Nothing
 
 
+def test_unwrap_error_with_error_with_attributes() -> None:
+    class TestError(Exception):
+        def __init__(self, message: str, value: object | None = None) -> None:
+            self.message = message
+            self.value = value
+
+    try:
+        raise UnwrapError(TestError("Hello", 123))
+    except TestError as e:
+        assert e.message == "Hello"
+        assert e.value == 123
+
+
+def test_nested_unwrap_errors_with_error_with_attributes() -> None:
+    class TestError(Exception):
+        def __init__(self, message: str, value: object | None = None) -> None:
+            self.message = message
+            self.value = value
+
+    try:
+        raise UnwrapError(UnwrapError(TestError("World", value=[])))
+    except TestError as e:
+        assert e.message == "World"
+        assert e.value == []
+
+
 def test_unwrap_error_with_nested_unwrap_error() -> None:
     with pytest.raises(ZeroDivisionError, match="^$"):
         raise UnwrapError(UnwrapError(ZeroDivisionError))
