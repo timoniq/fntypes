@@ -25,7 +25,7 @@ class F[R, **P = [R]]:
         return self.f(*args, **kwargs)
 
     def then[T](self, g: typing.Callable[[R], T], /) -> F[T, P]:
-        return F(lambda *args, **kwargs: g(self.f(*args, **kwargs)))
+        return self.new(lambda *args, **kwargs: g(self.f(*args, **kwargs)))
 
     def ensure(
         self,
@@ -49,13 +49,27 @@ class F[R, **P = [R]]:
                 raise error(result)
             return result
 
-        return F(check)
+        return self.new(check)
 
     def expect[T, Err](
         self: F[Result[T, Err], P],
         error: typing.Callable[[Result[T, Err]], BaseException] | BaseException | str | None = None,
     ) -> F[T, P]:
         return self.ensure(is_ok, error=error).then(lambda result: result.unwrap())
+    
+    if typing.TYPE_CHECKING:
+
+        @typing.overload
+        def new[T](self, /) -> F[T, [T]]: ...
+
+        @typing.overload
+        def new[X, **Y = [X]](self, f: typing.Callable[Y, X], /) -> F[X, Y]: ...
+
+        def new(self, *args, **kwargs) -> typing.Any:
+            ...
+    else:
+        def new(self, t) -> typing.Never:
+            return self.__class__(t)
 
 
 __all__ = ("F",)
